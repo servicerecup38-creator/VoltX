@@ -1599,6 +1599,319 @@ function buildAccount() {
     <div style="height:20px"></div>
 
   `;
+} 
+  /* ACCOUNT SECTIONS */
+
+function showWishlist() {
+
+  document.getElementById('accountHTML').innerHTML = `
+
+    <div class="sub-hdr">
+      <div class="sub-back" onclick="buildAccount()">
+        ‹ Compte
+      </div>
+
+      <div class="sub-ttl">
+        WISHLIST
+      </div>
+
+      <div></div>
+    </div>
+
+    <div class="cart-empty">
+
+      <div class="empty-ico">♡</div>
+
+      <div class="empty-t">
+        Wishlist vide
+      </div>
+
+      <div class="empty-s">
+        Sauvegardez vos motos favorites
+      </div>
+
+      <button
+        class="cta-full"
+        style="width:auto;padding:13px 28px;margin-top:8px"
+        onclick="nav('catalog')"
+      >
+        Explorer le catalogue
+      </button>
+
+    </div>
+
+  `;
+}
+
+function showAddresses() {
+
+  document.getElementById('accountHTML').innerHTML = `
+
+    <div class="sub-hdr">
+
+      <div class="sub-back" onclick="buildAccount()">
+        ‹ Compte
+      </div>
+
+      <div class="sub-ttl">
+        ADRESSES
+      </div>
+
+      <div></div>
+
+    </div>
+
+    <div class="ord-list">
+
+      <div class="ord-c">
+
+        <div class="ord-top">
+          <div class="ord-ref">
+            Adresse principale
+          </div>
+        </div>
+
+        <div class="ord-prod">
+          Jean Dupont
+        </div>
+
+        <div class="mi-s">
+          12 rue de Paris<br>
+          75001 Paris<br>
+          France
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+}
+
+function showNotifications() {
+
+  document.getElementById('accountHTML').innerHTML = `
+
+    <div class="sub-hdr">
+
+      <div class="sub-back" onclick="buildAccount()">
+        ‹ Compte
+      </div>
+
+      <div class="sub-ttl">
+        NOTIFICATIONS
+      </div>
+
+      <div></div>
+
+    </div>
+
+    <div class="ord-list">
+
+      <div class="mi">
+        <div class="mi-ico" style="background:rgba(48,209,88,.1)">
+          🔔
+        </div>
+
+        <div style="flex:1">
+          <div class="mi-t">
+            Promotions
+          </div>
+
+          <div class="mi-s">
+            Activées
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mi">
+        <div class="mi-ico" style="background:rgba(10,132,255,.1)">
+          📦
+        </div>
+
+        <div style="flex:1">
+          <div class="mi-t">
+            Suivi commandes
+          </div>
+
+          <div class="mi-s">
+            Activé
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+}
+
+function showSettings() {
+
+  document.getElementById('accountHTML').innerHTML = `
+
+    <div class="sub-hdr">
+
+      <div class="sub-back" onclick="buildAccount()">
+        ‹ Compte
+      </div>
+
+      <div class="sub-ttl">
+        PARAMÈTRES
+      </div>
+
+      <div></div>
+
+    </div>
+
+    <div class="ord-list">
+
+      <div class="mi">
+        <div class="mi-ico" style="background:rgba(142,142,147,.1)">
+          🔒
+        </div>
+
+        <div style="flex:1">
+          <div class="mi-t">
+            Modifier le mot de passe
+          </div>
+
+          <div class="mi-s">
+            Sécurisez votre compte
+          </div>
+        </div>
+      </div>
+
+      <div class="mi">
+        <div class="mi-ico" style="background:rgba(255,59,48,.1)">
+          🗑
+        </div>
+
+        <div style="flex:1">
+          <div class="mi-t">
+            Supprimer le compte
+          </div>
+
+          <div class="mi-s">
+            Action irréversible
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  `;
+}
+
+function showSupport() {
+
+  document.getElementById('accountHTML').innerHTML = `
+
+    <div class="sub-hdr">
+
+      <div class="sub-back" onclick="buildAccount()">
+        ‹ Compte
+      </div>
+
+      <div class="sub-ttl">
+        SUPPORT
+      </div>
+
+      <div></div>
+
+    </div>
+
+    <div class="ord-list">
+
+      <div class="mi">
+        <div class="mi-ico" style="background:rgba(255,159,10,.1)">
+          💬
+        </div>
+
+        <div style="flex:1">
+          <div class="mi-t">
+            Chat assistance
+          </div>
+
+          <div class="mi-s">
+            Réponse moyenne : 2 min
+          </div>
+        </div>
+      </div>
+
+      <div class="mi">
+        <div class="mi-ico" style="background:rgba(10,132,255,.1)">
+          📞
+        </div>
+
+        <div style="flex:1">
+          <div class="mi-t">
+            Support téléphone
+          </div>
+
+          <div class="mi-s">
+            +33 1 00 00 00 00
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  `;
+}
+
+function showTracking() {
+
+  document.getElementById('accountHTML').innerHTML = `
+
+    <div class="sub-hdr">
+
+      <div class="sub-back" onclick="buildAccount()">
+        ‹ Compte
+      </div>
+
+      <div class="sub-ttl">
+        LIVRAISONS
+      </div>
+
+      <div></div>
+
+    </div>
+
+    <div class="ord-list">
+
+      <div class="ord-c">
+
+        <div class="ord-top">
+          <div class="ord-ref">
+            #VX-2025-002
+          </div>
+
+          <div class="ord-date">
+            Livraison estimée demain
+          </div>
+        </div>
+
+        <div class="ord-prod">
+          VoltX UltraBee Pro
+        </div>
+
+        <div class="ord-bot">
+          <span class="ord-status os-ship">
+            ↗ En transit
+          </span>
+
+          <div class="ord-total">
+            Chronopost
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
 }
 /* AUTH */
 function openSheet() {
