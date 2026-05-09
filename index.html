@@ -476,7 +476,8 @@ css .pc-img img{   width:110px;   height:auto;   object-fit:contain; }  .pr-img 
         <div class="back-pill" onclick="nav(prevPage)">‹ <span id="backLbl">Catalogue</span></div>
         <div class="share-b">⬆️</div>
       </div>
-      <div class="det-gal"><span id="dIco">🏍️</span><div class="det-bdg b-new" id="dBdg" style="display:none">NOUVEAU</div></div>
+      <div class="det-gal">
+  <img id="dImg" src="" alt="Produit"><div class="det-bdg b-new" id="dBdg" style="display:none">NOUVEAU</div></div>
       <div class="det-thumbs">
         <div class="dthumb on">🏍️</div><div class="dthumb">⚡</div><div class="dthumb">🔋</div><div class="dthumb">🔧</div>
       </div>
@@ -725,7 +726,7 @@ function openProd(id){
   prevPage=document.querySelector('.page.active')?.id?.replace('pg-','')||'catalog';
   curProd=DB.find(p=>p.id===id);if(!curProd)return;
   qty=1;document.getElementById('qVal').textContent=1;
-  document.getElementById('dIco').textContent=curProd.ico;
+  document.getElementById('dImg').src=curProd.img;
   document.getElementById('dName').textContent=curProd.name;
   document.getElementById('dCat').textContent=catLbl(curProd.cat);
   document.getElementById('dPrice').textContent=fmt(curProd.price)+' €';
