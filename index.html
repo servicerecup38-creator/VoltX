@@ -355,7 +355,27 @@ body {
 /* TOAST */
 .toast { position:fixed; top:calc(var(--safe-t) + 58px + 10px); left:14px; right:14px; max-width:402px; margin:0 auto; background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:14px; padding:13px 16px; display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; z-index:9999; transform:translateY(-120%); opacity:0; transition:all .3s var(--ease); box-shadow:0 8px 32px rgba(0,0,0,.5); }
 .toast.show { transform:translateY(0); opacity:1; }
-css .pc-img img{   width:110px;   height:auto;   object-fit:contain; }  .pr-img img{   width:90px;   height:auto;   object-fit:contain; }  .det-gal img{   width:85%;   max-width:320px;   object-fit:contain;   z-index:2; }  .ci-img img{   width:55px;   height:auto;   object-fit:contain; } 
+.pc-img img{
+  width:110px;
+  height:auto;
+  object-fit:contain;
+}
+.pr-img img{
+  width:90px;
+  height:auto;
+  object-fit:contain;
+}
+.det-gal img{
+  width:85%;
+  max-width:320px;
+  object-fit:contain;
+  z-index:2;
+}
+.ci-img img{
+  width:55px;
+  height:auto;
+  object-fit:contain;
+}
 </style>
 </head>
 <body>
@@ -625,193 +645,811 @@ css .pc-img img{   width:110px;   height:auto;   object-fit:contain; }  .pr-img 
 
 <script>
 /* DATA */
-const DB=[
+const DB = [
   {
-    id:1,
-    name:'VoltX LightBee X OffRoad',
-    cat:'offroad',
-    price:4790,
-    old:null,
-    badge:'',
-    img:'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
-    desc:'Moteur 6000W · 40Ah · 65 km',
-    m:'6000W',
-    b:'60V/40Ah',
-    a:'65 km',
-    v:'45 km/h',
-    p:'47 kg'
+    id: 1,
+    name: 'VoltX LightBee X OffRoad',
+    cat: 'offroad',
+    price: 4790,
+    old: null,
+    badge: '',
+    img: 'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
+    desc: 'Moteur 6000W · 40Ah · 65 km',
+    m: '6000W',
+    b: '60V/40Ah',
+    a: '65 km',
+    v: '45 km/h',
+    p: '47 kg'
   },
 
   {
-    id:2,
-    name:'VoltX LightBee X Homologué',
-    cat:'homologue',
-    price:4990,
-    old:5290,
-    badge:'new',
-    img:'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
-    desc:'Homologuée route · Garantie 2 ans',
-    m:'6000W',
-    b:'60V/40Ah',
-    a:'65 km',
-    v:'45 km/h',
-    p:'49 kg'
+    id: 2,
+    name: 'VoltX LightBee X Homologué',
+    cat: 'homologue',
+    price: 4990,
+    old: 5290,
+    badge: 'new',
+    img: 'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
+    desc: 'Homologuée route · Garantie 2 ans',
+    m: '6000W',
+    b: '60V/40Ah',
+    a: '65 km',
+    v: '45 km/h',
+    p: '49 kg'
   },
 
   {
-    id:3,
-    name:'VoltX Hyper Bee',
-    cat:'offroad',
-    price:3490,
-    old:null,
-    badge:'new',
-    img:'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
-    desc:'Génération compacte · Idéale débutants',
-    m:'3000W',
-    b:'48V/32Ah',
-    a:'50 km',
-    v:'40 km/h',
-    p:'38 kg'
+    id: 3,
+    name: 'VoltX Hyper Bee',
+    cat: 'offroad',
+    price: 3490,
+    old: null,
+    badge: 'new',
+    img: 'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
+    desc: 'Génération compacte · Idéale débutants',
+    m: '3000W',
+    b: '48V/32Ah',
+    a: '50 km',
+    v: '40 km/h',
+    p: '38 kg'
   }
 ];
 
-let cart=[],loggedIn=false,curProd=null,prevPage='catalog',qty=1;
+let cart = [];
+let loggedIn = false;
+let curProd = null;
+let prevPage = 'catalog';
+let qty = 1;
 
 /* TIME */
-(function tick(){const n=new Date();document.getElementById('sTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');setTimeout(tick,10000);})();
+(function tick() {
+  const n = new Date();
+
+  document.getElementById('sTime').textContent =
+    String(n.getHours()).padStart(2, '0') +
+    ':' +
+    String(n.getMinutes()).padStart(2, '0');
+
+  setTimeout(tick, 10000);
+})();
 
 /* NAV */
-const NM={home:'nt-home',catalog:'nt-catalog',cart:'nt-cart',account:'nt-account'};
-function nav(p){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  document.getElementById('pg-'+p)?.classList.add('active');
-  document.getElementById('sv').scrollTop=0;
-  document.querySelectorAll('.nt').forEach(x=>x.classList.remove('on'));
-  if(NM[p])document.getElementById(NM[p])?.classList.add('on');
-  if(p==='cart')buildCart();
-  if(p==='checkout')buildCheckout();
-  if(p==='account')buildAccount();
+const NM = {
+  home: 'nt-home',
+  catalog: 'nt-catalog',
+  cart: 'nt-cart',
+  account: 'nt-account'
+};
+
+function nav(p) {
+  document.querySelectorAll('.page').forEach(x => {
+    x.classList.remove('active');
+  });
+
+  document.getElementById('pg-' + p)?.classList.add('active');
+
+  document.getElementById('sv').scrollTop = 0;
+
+  document.querySelectorAll('.nt').forEach(x => {
+    x.classList.remove('on');
+  });
+
+  if (NM[p]) {
+    document.getElementById(NM[p])?.classList.add('on');
+  }
+
+  if (p === 'cart') buildCart();
+  if (p === 'checkout') buildCheckout();
+  if (p === 'account') buildAccount();
 }
-function authReq(){loggedIn?nav('account'):openSheet();}
+
+function authReq() {
+  loggedIn ? nav('account') : openSheet();
+}
 
 /* HELPERS */
-function catLbl(c){return c==='offroad'?'Off-Road':c==='homologue'?'Homologué':'Youth';}
-function fmt(n){return n.toLocaleString('fr-FR');}
+function catLbl(c) {
+  return c === 'offroad'
+    ? 'Off-Road'
+    : c === 'homologue'
+    ? 'Homologué'
+    : 'Youth';
+}
+
+function fmt(n) {
+  return n.toLocaleString('fr-FR');
+}
 
 /* SMALL CARD */
-javascript function smallCard(p){   const bdg=p.badge==='new'     ?'<div class="pc-bdg b-new">NOUVEAU</div>'     :p.old     ?'<div class="pc-bdg b-hot">PROMO</div>'     :'';    const oldH=p.old     ?`<span class="pc-old">${fmt(p.old)}€</span>`     :'';    return `   <div class="pc" onclick="openProd(${p.id})">     <div class="pc-img">       <img src="${p.img}" alt="${p.name}">       ${bdg}     </div>      <div class="pc-body">       <div class="pc-cat">${catLbl(p.cat)}</div>       <div class="pc-name">${p.name}</div>       <div class="pc-price">${fmt(p.price)} €${oldH}</div>     </div>   </div>`; } 
+function smallCard(p) {
+  const bdg =
+    p.badge === 'new'
+      ? '<div class="pc-bdg b-new">NOUVEAU</div>'
+      : p.old
+      ? '<div class="pc-bdg b-hot">PROMO</div>'
+      : '';
 
-/* PROD ROW */
-function prodRow(p){
-  const bdg=p.badge==='new'?'<div class="pr-badge b-new">NOUVEAU</div>':p.old?'<div class="pr-badge b-hot">PROMO</div>':'';
-  const oldH=p.old?`<div class="pr-old">${fmt(p.old)} €</div>`:'';
-  return`<div class="pr" onclick="openProd(${p.id})"><div class="pr-img">${p.ico}</div><div class="pr-info"><div><div class="pr-cat">${catLbl(p.cat)}</div><div class="pr-name">${p.name}</div><div class="pr-desc">${p.desc}</div></div><div class="pr-bot"><div><div class="pr-price">${fmt(p.price)} €</div>${oldH}</div><button class="pr-add" onclick="event.stopPropagation();quickAdd(${p.id})">+</button></div></div>${bdg}</div>`;
+  const oldH = p.old
+    ? `<span class="pc-old">${fmt(p.old)} €</span>`
+    : '';
+
+  return `
+    <div class="pc" onclick="openProd(${p.id})">
+
+      <div class="pc-img">
+        <img src="${p.img}" alt="${p.name}">
+        ${bdg}
+      </div>
+
+      <div class="pc-body">
+        <div class="pc-cat">${catLbl(p.cat)}</div>
+
+        <div class="pc-name">
+          ${p.name}
+        </div>
+
+        <div class="pc-price">
+          ${fmt(p.price)} €
+          ${oldH}
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+/* PRODUCT ROW */
+function prodRow(p) {
+  const bdg =
+    p.badge === 'new'
+      ? '<div class="pr-badge b-new">NOUVEAU</div>'
+      : p.old
+      ? '<div class="pr-badge b-hot">PROMO</div>'
+      : '';
+
+  const oldH = p.old
+    ? `<div class="pr-old">${fmt(p.old)} €</div>`
+    : '';
+
+  return `
+    <div class="pr" onclick="openProd(${p.id})">
+
+      <div class="pr-img">
+        <img src="${p.img}" alt="${p.name}">
+      </div>
+
+      <div class="pr-info">
+
+        <div>
+          <div class="pr-cat">${catLbl(p.cat)}</div>
+
+          <div class="pr-name">
+            ${p.name}
+          </div>
+
+          <div class="pr-desc">
+            ${p.desc}
+          </div>
+        </div>
+
+        <div class="pr-bot">
+
+          <div>
+            <div class="pr-price">
+              ${fmt(p.price)} €
+            </div>
+
+            ${oldH}
+          </div>
+
+          <button
+            class="pr-add"
+            onclick="event.stopPropagation();quickAdd(${p.id})"
+          >
+            +
+          </button>
+
+        </div>
+
+      </div>
+
+      ${bdg}
+
+    </div>
+  `;
 }
 
 /* INIT */
-function initHome(){
-  document.getElementById('homeCards').innerHTML=[DB[0],DB[2],DB[5]].map(smallCard).join('');
-  document.getElementById('newCards').innerHTML=DB.filter(p=>p.badge==='new').map(smallCard).join('');
-}
-function renderCat(list){document.getElementById('prodList').innerHTML=list.map(prodRow).join('');}
+function initHome() {
+  document.getElementById('homeCards').innerHTML =
+    [DB[0], DB[1], DB[2]]
+      .map(smallCard)
+      .join('');
 
-function filterCat(cat,el){
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');
-  renderCat(cat==='all'?DB:cat==='promo'?DB.filter(p=>p.old):DB.filter(p=>p.cat===cat));
+  document.getElementById('newCards').innerHTML =
+    DB.filter(p => p.badge === 'new')
+      .map(smallCard)
+      .join('');
 }
-function doSearch(q){renderCat(q.length<2?DB:DB.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.desc.toLowerCase().includes(q.toLowerCase())));}
+
+function renderCat(list) {
+  document.getElementById('prodList').innerHTML =
+    list.map(prodRow).join('');
+}
+
+/* FILTER */
+function filterCat(cat, el) {
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.remove('on');
+  });
+
+  el.classList.add('on');
+
+  renderCat(
+    cat === 'all'
+      ? DB
+      : cat === 'promo'
+      ? DB.filter(p => p.old)
+      : DB.filter(p => p.cat === cat)
+  );
+}
+
+/* SEARCH */
+function doSearch(q) {
+  renderCat(
+    q.length < 2
+      ? DB
+      : DB.filter(
+          p =>
+            p.name.toLowerCase().includes(q.toLowerCase()) ||
+            p.desc.toLowerCase().includes(q.toLowerCase())
+        )
+  );
+}
 
 /* PRODUCT DETAIL */
-function openProd(id){
-  prevPage=document.querySelector('.page.active')?.id?.replace('pg-','')||'catalog';
-  curProd=DB.find(p=>p.id===id);if(!curProd)return;
-  qty=1;document.getElementById('qVal').textContent=1;
-  document.getElementById('dImg').src=curProd.img;
-  document.getElementById('dName').textContent=curProd.name;
-  document.getElementById('dCat').textContent=catLbl(curProd.cat);
-  document.getElementById('dPrice').textContent=fmt(curProd.price)+' €';
-  const oe=document.getElementById('dOld');
-  oe.style.display=curProd.old?'block':'none';if(curProd.old)oe.textContent=fmt(curProd.old)+' €';
-  const be=document.getElementById('dBdg');
-  if(curProd.badge==='new'){be.textContent='NOUVEAU';be.className='det-bdg b-new';be.style.display='block';}
-  else if(curProd.old){be.textContent='PROMO';be.className='det-bdg b-hot';be.style.display='block';}
-  else be.style.display='none';
-  ['m','b','a','v','p'].forEach(k=>document.getElementById('sp-'+k).textContent=curProd[k]);
+function openProd(id) {
+  prevPage =
+    document
+      .querySelector('.page.active')
+      ?.id?.replace('pg-', '') || 'catalog';
+
+  curProd = DB.find(p => p.id === id);
+
+  if (!curProd) return;
+
+  qty = 1;
+
+  document.getElementById('qVal').textContent = 1;
+
+  document.getElementById('dImg').src = curProd.img;
+  document.getElementById('dName').textContent = curProd.name;
+  document.getElementById('dCat').textContent = catLbl(curProd.cat);
+
+  document.getElementById('dPrice').textContent =
+    fmt(curProd.price) + ' €';
+
+  const oe = document.getElementById('dOld');
+
+  oe.style.display = curProd.old ? 'block' : 'none';
+
+  if (curProd.old) {
+    oe.textContent = fmt(curProd.old) + ' €';
+  }
+
+  const be = document.getElementById('dBdg');
+
+  if (curProd.badge === 'new') {
+    be.textContent = 'NOUVEAU';
+    be.className = 'det-bdg b-new';
+    be.style.display = 'block';
+  } else if (curProd.old) {
+    be.textContent = 'PROMO';
+    be.className = 'det-bdg b-hot';
+    be.style.display = 'block';
+  } else {
+    be.style.display = 'none';
+  }
+
+  ['m', 'b', 'a', 'v', 'p'].forEach(k => {
+    document.getElementById('sp-' + k).textContent =
+      curProd[k];
+  });
+
   document.getElementById('accBody').classList.remove('open');
   document.getElementById('accArr').classList.remove('open');
-  document.getElementById('backLbl').textContent=prevPage==='home'?'Accueil':'Catalogue';
-  document.querySelectorAll('#pg-product .opt-pill').forEach(o=>o.classList.remove('on'));
-  document.querySelectorAll('#pg-product .opt-row').forEach(r=>r.firstElementChild?.classList.add('on'));
+
+  document.getElementById('backLbl').textContent =
+    prevPage === 'home'
+      ? 'Accueil'
+      : 'Catalogue';
+
+  document
+    .querySelectorAll('#pg-product .opt-pill')
+    .forEach(o => o.classList.remove('on'));
+
+  document
+    .querySelectorAll('#pg-product .opt-row')
+    .forEach(r =>
+      r.firstElementChild?.classList.add('on')
+    );
+
   nav('product');
 }
-function pickOpt(el){el.closest('.opt-row').querySelectorAll('.opt-pill').forEach(o=>o.classList.remove('on'));el.classList.add('on');}
-function toggleAcc(){document.getElementById('accBody').classList.toggle('open');document.getElementById('accArr').classList.toggle('open');}
-function chgQty(d){qty=Math.max(1,qty+d);document.getElementById('qVal').textContent=qty;}
+
+function pickOpt(el) {
+  el.closest('.opt-row')
+    .querySelectorAll('.opt-pill')
+    .forEach(o => o.classList.remove('on'));
+
+  el.classList.add('on');
+}
+
+function toggleAcc() {
+  document.getElementById('accBody').classList.toggle('open');
+  document.getElementById('accArr').classList.toggle('open');
+}
+
+function chgQty(d) {
+  qty = Math.max(1, qty + d);
+  document.getElementById('qVal').textContent = qty;
+}
 
 /* CART */
-function addNow(){
-  if(!curProd)return;
-  const col=document.querySelector('#pg-product .opt-pill.on')?.textContent||'Standard';
-  const ex=cart.find(i=>i.id===curProd.id&&i.var===col);
-  if(ex)ex.qty+=qty;else cart.push({...curProd,qty,var:col});
-  updBadge();toast('✅',`${curProd.name} ajouté !`);nav('cart');
+function addNow() {
+  if (!curProd) return;
+
+  const col =
+    document.querySelector(
+      '#pg-product .opt-pill.on'
+    )?.textContent || 'Standard';
+
+  const ex = cart.find(
+    i => i.id === curProd.id && i.var === col
+  );
+
+  if (ex) {
+    ex.qty += qty;
+  } else {
+    cart.push({
+      ...curProd,
+      qty,
+      var: col
+    });
+  }
+
+  updBadge();
+
+  toast('✅', `${curProd.name} ajouté !`);
+
+  nav('cart');
 }
-function quickAdd(id){
-  const p=DB.find(x=>x.id===id);if(!p)return;
-  const ex=cart.find(i=>i.id===id);
-  if(ex)ex.qty++;else cart.push({...p,qty:1,var:'Standard'});
-  updBadge();toast('✅',`${p.name} ajouté !`);
+
+function quickAdd(id) {
+  const p = DB.find(x => x.id === id);
+
+  if (!p) return;
+
+  const ex = cart.find(i => i.id === id);
+
+  if (ex) {
+    ex.qty++;
+  } else {
+    cart.push({
+      ...p,
+      qty: 1,
+      var: 'Standard'
+    });
+  }
+
+  updBadge();
+
+  toast('✅', `${p.name} ajouté !`);
 }
-function rmItem(id){cart=cart.filter(i=>i.id!==id);updBadge();buildCart();}
-function chgItem(id,d){const i=cart.find(x=>x.id===id);if(i)i.qty=Math.max(1,i.qty+d);updBadge();buildCart();}
-function total(){return cart.reduce((s,i)=>s+i.price*i.qty,0);}
-function updBadge(){
-  const n=cart.reduce((s,i)=>s+i.qty,0);
-  ['cDot','nDot'].forEach(id=>{const e=document.getElementById(id);if(e){e.style.display=n?'flex':'none';e.textContent=n;}});
+
+function rmItem(id) {
+  cart = cart.filter(i => i.id !== id);
+
+  updBadge();
+
+  buildCart();
 }
-function buildCart(){
-  const el=document.getElementById('cartHTML');
-  if(!cart.length){el.innerHTML=`<div class="cart-empty"><div class="empty-ico">🛒</div><div class="empty-t">Panier vide</div><div class="empty-s">Ajoutez des motos depuis le catalogue</div><button class="cta-full" style="width:auto;padding:13px 28px;margin-top:4px" onclick="nav('catalog')">Voir le Catalogue</button></div>`;return;}
-  const items=cart.map(i=>`<div class="ci"><div class="ci-img">${i.ico}</div><div class="ci-info"><div class="ci-name">${i.name}</div><div class="ci-var">${i.var} · ${fmt(i.price)} €/u</div><div class="ci-bot"><div class="mq"><button class="mq-b" onclick="chgItem(${i.id},-1)">−</button><div class="mq-v">${i.qty}</div><button class="mq-b" onclick="chgItem(${i.id},1)">+</button></div><div class="ci-price">${fmt(i.price*i.qty)} €</div></div><div class="ci-del" onclick="rmItem(${i.id})">🗑 Supprimer</div></div></div>`).join('');
-  const t=total();
-  el.innerHTML=`<div class="cart-items">${items}</div><div class="sum-card"><div class="coupon-row"><input class="c-in" id="cpIn" placeholder="Code promo"><button class="c-btn" onclick="applyCoupon()">Appliquer</button></div><div class="sum-r"><span>Sous-total</span><span>${fmt(t)} €</span></div><div class="sum-r"><span>Livraison</span><span style="color:var(--green)">OFFERTE</span></div><div class="sum-total"><span>Total TTC</span><span class="sum-tp">${fmt(t)} €</span></div></div><div class="cta-wrap"><button class="cta-full" onclick="nav('checkout')">Commander — ${fmt(t)} € →</button><div class="safe-note">🔒 Paiement 100% sécurisé</div></div>`;
+
+function chgItem(id, d) {
+  const i = cart.find(x => x.id === id);
+
+  if (i) {
+    i.qty = Math.max(1, i.qty + d);
+  }
+
+  updBadge();
+
+  buildCart();
 }
-function applyCoupon(){const c=document.getElementById('cpIn')?.value?.toUpperCase();c==='VOLTX10'?toast('🎉','Code −10% appliqué !'):toast('❌','Code invalide');}
-function buildCheckout(){
-  document.getElementById('coItems').innerHTML=cart.map(i=>`<div class="cr-item"><span>${i.ico} ${i.name} ×${i.qty}</span><span style="color:var(--accent);font-weight:700">${fmt(i.price*i.qty)} €</span></div>`).join('');
-  document.getElementById('coTotal').textContent=fmt(total())+' €';
+
+function total() {
+  return cart.reduce(
+    (s, i) => s + i.price * i.qty,
+    0
+  );
 }
-function pickShip(el){document.querySelectorAll('.s-opt').forEach(o=>o.classList.remove('on'));el.classList.add('on');}
-function pickPay(el,t){document.querySelectorAll('.p-opt').forEach(o=>o.classList.remove('on'));el.classList.add('on');document.getElementById('cardEx').classList.toggle('show',t==='card');}
-function placeOrder(){const r='#VX-'+Date.now().toString().slice(-6);document.getElementById('sucRef').textContent=r;cart=[];updBadge();nav('success');}
+
+function updBadge() {
+  const n = cart.reduce((s, i) => s + i.qty, 0);
+
+  ['cDot', 'nDot'].forEach(id => {
+    const e = document.getElementById(id);
+
+    if (e) {
+      e.style.display = n ? 'flex' : 'none';
+      e.textContent = n;
+    }
+  });
+}
+
+function buildCart() {
+  const el = document.getElementById('cartHTML');
+
+  if (!cart.length) {
+    el.innerHTML = `
+      <div class="cart-empty">
+        <div class="empty-ico">🛒</div>
+
+        <div class="empty-t">
+          Panier vide
+        </div>
+
+        <div class="empty-s">
+          Ajoutez des motos depuis le catalogue
+        </div>
+
+        <button
+          class="cta-full"
+          style="width:auto;padding:13px 28px;margin-top:4px"
+          onclick="nav('catalog')"
+        >
+          Voir le Catalogue
+        </button>
+      </div>
+    `;
+
+    return;
+  }
+
+  const items = cart.map(i => `
+    <div class="ci">
+
+      <div class="ci-img">
+        <img src="${i.img}" alt="${i.name}">
+      </div>
+
+      <div class="ci-info">
+
+        <div class="ci-name">
+          ${i.name}
+        </div>
+
+        <div class="ci-var">
+          ${i.var} · ${fmt(i.price)} €/u
+        </div>
+
+        <div class="ci-bot">
+
+          <div class="mq">
+            <button class="mq-b" onclick="chgItem(${i.id},-1)">−</button>
+
+            <div class="mq-v">
+              ${i.qty}
+            </div>
+
+            <button class="mq-b" onclick="chgItem(${i.id},1)">+</button>
+          </div>
+
+          <div class="ci-price">
+            ${fmt(i.price * i.qty)} €
+          </div>
+
+        </div>
+
+        <div
+          class="ci-del"
+          onclick="rmItem(${i.id})"
+        >
+          🗑 Supprimer
+        </div>
+
+      </div>
+
+    </div>
+  `).join('');
+
+  const t = total();
+
+  el.innerHTML = `
+    <div class="cart-items">
+      ${items}
+    </div>
+
+    <div class="sum-card">
+
+      <div class="coupon-row">
+        <input
+          class="c-in"
+          id="cpIn"
+          placeholder="Code promo"
+        >
+
+        <button
+          class="c-btn"
+          onclick="applyCoupon()"
+        >
+          Appliquer
+        </button>
+      </div>
+
+      <div class="sum-r">
+        <span>Sous-total</span>
+        <span>${fmt(t)} €</span>
+      </div>
+
+      <div class="sum-r">
+        <span>Livraison</span>
+        <span style="color:var(--green)">
+          OFFERTE
+        </span>
+      </div>
+
+      <div class="sum-total">
+        <span>Total TTC</span>
+
+        <span class="sum-tp">
+          ${fmt(t)} €
+        </span>
+      </div>
+
+    </div>
+
+    <div class="cta-wrap">
+
+      <button
+        class="cta-full"
+        onclick="nav('checkout')"
+      >
+        Commander — ${fmt(t)} € →
+      </button>
+
+      <div class="safe-note">
+        🔒 Paiement 100% sécurisé
+      </div>
+
+    </div>
+  `;
+}
+
+function applyCoupon() {
+  const c =
+    document.getElementById('cpIn')
+      ?.value
+      ?.toUpperCase();
+
+  c === 'VOLTX10'
+    ? toast('🎉', 'Code −10% appliqué !')
+    : toast('❌', 'Code invalide');
+}
+
+function buildCheckout() {
+  document.getElementById('coItems').innerHTML =
+    cart.map(i => `
+      <div class="cr-item">
+
+        <span>
+          <img
+            src="${i.img}"
+            style="width:22px;height:auto;vertical-align:middle;margin-right:6px"
+          >
+
+          ${i.name} ×${i.qty}
+        </span>
+
+        <span
+          style="color:var(--accent);font-weight:700"
+        >
+          ${fmt(i.price * i.qty)} €
+        </span>
+
+      </div>
+    `).join('');
+
+  document.getElementById('coTotal').textContent =
+    fmt(total()) + ' €';
+}
+
+function pickShip(el) {
+  document.querySelectorAll('.s-opt').forEach(o => {
+    o.classList.remove('on');
+  });
+
+  el.classList.add('on');
+}
+
+function pickPay(el, t) {
+  document.querySelectorAll('.p-opt').forEach(o => {
+    o.classList.remove('on');
+  });
+
+  el.classList.add('on');
+
+  document
+    .getElementById('cardEx')
+    .classList.toggle('show', t === 'card');
+}
+
+function placeOrder() {
+  const r =
+    '#VX-' +
+    Date.now().toString().slice(-6);
+
+  document.getElementById('sucRef').textContent = r;
+
+  cart = [];
+
+  updBadge();
+
+  nav('success');
+}
 
 /* ACCOUNT */
-function buildAccount(){
-  const el=document.getElementById('accountHTML');
-  if(!loggedIn){el.innerHTML=`<div class="cart-empty"><div class="empty-ico">👤</div><div class="empty-t">Mon Compte</div><div class="empty-s">Connectez-vous pour accéder à votre espace</div><button class="cta-full" style="width:auto;padding:13px 28px;margin-top:4px" onclick="openSheet()">Se Connecter</button></div>`;return;}
-  el.innerHTML=`<div class="acc-hero"><div class="avatar">👤</div><div><div class="acc-name">Jean Dupont</div><div class="acc-mail">jean.dupont@email.com</div><div class="acc-since">Client depuis mai 2025</div></div><button class="edit-btn">Modifier</button></div><div class="acc-kpis"><div class="kpi"><div class="kpi-n">3</div><div class="kpi-l">Commandes</div></div><div class="kpi"><div class="kpi-n">14k€</div><div class="kpi-l">Total</div></div><div class="kpi"><div class="kpi-n">1</div><div class="kpi-l">En cours</div></div></div><div class="menu-grp-t">Mes Achats</div><div class="mi" onclick="showOrders()"><div class="mi-ico" style="background:rgba(212,247,0,.1)">📦</div><div style="flex:1"><div class="mi-t">Mes Commandes</div><div class="mi-s">3 commandes · 1 en cours</div></div><div class="mi-arr">›</div></div><div class="mi"><div class="mi-ico" style="background:rgba(255,59,48,.1)">♡</div><div style="flex:1"><div class="mi-t">Ma Wishlist</div><div class="mi-s">0 article sauvegardé</div></div><div class="mi-arr">›</div></div><div class="menu-grp-t">Mon Profil</div><div class="mi"><div class="mi-ico" style="background:rgba(10,132,255,.1)">📍</div><div style="flex:1"><div class="mi-t">Mes Adresses</div><div class="mi-s">1 adresse enregistrée</div></div><div class="mi-arr">›</div></div><div class="mi"><div class="mi-ico" style="background:rgba(48,209,88,.1)">🔔</div><div style="flex:1"><div class="mi-t">Notifications</div><div class="mi-s">Actives</div></div><div class="mi-arr">›</div></div><div class="mi"><div class="mi-ico" style="background:rgba(142,142,147,.1)">⚙️</div><div style="flex:1"><div class="mi-t">Paramètres</div><div class="mi-s">Mot de passe · Confidentialité</div></div><div class="mi-arr">›</div></div><div class="menu-grp-t"></div><div class="mi" onclick="doLogout()"><div class="mi-ico" style="background:rgba(255,59,48,.1)">🚪</div><div style="flex:1"><div class="mi-t" style="color:var(--red)">Déconnexion</div></div><div class="mi-arr">›</div></div><div style="height:20px"></div>`;
-}
-function showOrders(){
-  document.getElementById('accountHTML').innerHTML=`<div class="sub-hdr"><div class="sub-back" onclick="buildAccount()">‹ Compte</div><div class="sub-ttl">COMMANDES</div><div></div></div><div class="ord-list"><div class="ord-c"><div class="ord-top"><div class="ord-ref">#VX-2025-001</div><div class="ord-date">02 mai 2025</div></div><div class="ord-prod">🏍️ VoltX LightBee X OffRoad</div><div class="ord-bot"><span class="ord-status os-ok">✓ Livré</span><div class="ord-total">4 790 €</div></div></div><div class="ord-c"><div class="ord-top"><div class="ord-ref">#VX-2025-002</div><div class="ord-date">08 mai 2025</div></div><div class="ord-prod">🔥 VoltX UltraBee Pro 125cc</div><div class="ord-bot"><span class="ord-status os-ship">↗ Expédié</span><div class="ord-total">6 990 €</div></div></div><div class="ord-c"><div class="ord-top"><div class="ord-ref">#VX-2025-003</div><div class="ord-date">09 mai 2025</div></div><div class="ord-prod">🌩️ VoltX StormBee Homologué</div><div class="ord-bot"><span class="ord-status os-proc">⏳ En traitement</span><div class="ord-total">10 890 €</div></div></div></div>`;
+function buildAccount() {
+  const el = document.getElementById('accountHTML');
+
+  if (!loggedIn) {
+    el.innerHTML = `
+      <div class="cart-empty">
+
+        <div class="empty-ico">👤</div>
+
+        <div class="empty-t">
+          Mon Compte
+        </div>
+
+        <div class="empty-s">
+          Connectez-vous pour accéder à votre espace
+        </div>
+
+        <button
+          class="cta-full"
+          style="width:auto;padding:13px 28px;margin-top:4px"
+          onclick="openSheet()"
+        >
+          Se Connecter
+        </button>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="acc-hero">
+
+      <div class="avatar">👤</div>
+
+      <div>
+        <div class="acc-name">
+          Jean Dupont
+        </div>
+
+        <div class="acc-mail">
+          jean.dupont@email.com
+        </div>
+
+        <div class="acc-since">
+          Client depuis mai 2025
+        </div>
+      </div>
+
+      <button class="edit-btn">
+        Modifier
+      </button>
+
+    </div>
+  `;
 }
 
 /* AUTH */
-function openSheet(){document.getElementById('authSheet').classList.add('open');document.getElementById('sheetBg').classList.add('open');}
-function closeSheet(){document.getElementById('authSheet').classList.remove('open');document.getElementById('sheetBg').classList.remove('open');}
-function authTab(t,el){document.querySelectorAll('.a-tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');document.getElementById('loginF').classList.toggle('show',t==='login');document.getElementById('registerF').classList.toggle('show',t==='register');}
-function doLogin(){loggedIn=true;closeSheet();toast('✅','Connexion réussie !');nav('account');}
-function doRegister(){loggedIn=true;closeSheet();toast('🎉','Bienvenue chez VoltX !');nav('account');}
-function doLogout(){loggedIn=false;toast('👋','À bientôt !');nav('home');}
+function openSheet() {
+  document.getElementById('authSheet')
+    .classList.add('open');
+
+  document.getElementById('sheetBg')
+    .classList.add('open');
+}
+
+function closeSheet() {
+  document.getElementById('authSheet')
+    .classList.remove('open');
+
+  document.getElementById('sheetBg')
+    .classList.remove('open');
+}
+
+function authTab(t, el) {
+  document.querySelectorAll('.a-tab').forEach(x => {
+    x.classList.remove('on');
+  });
+
+  el.classList.add('on');
+
+  document.getElementById('loginF')
+    .classList.toggle('show', t === 'login');
+
+  document.getElementById('registerF')
+    .classList.toggle('show', t === 'register');
+}
+
+function doLogin() {
+  loggedIn = true;
+
+  closeSheet();
+
+  toast('✅', 'Connexion réussie !');
+
+  nav('account');
+}
+
+function doRegister() {
+  loggedIn = true;
+
+  closeSheet();
+
+  toast('🎉', 'Bienvenue chez VoltX !');
+
+  nav('account');
+}
+
+function doLogout() {
+  loggedIn = false;
+
+  toast('👋', 'À bientôt !');
+
+  nav('home');
+}
 
 /* TOAST */
 let tT;
-function toast(ico,msg){document.getElementById('t-ico').textContent=ico;document.getElementById('t-msg').textContent=msg;const e=document.getElementById('toast');e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),3000);}
+
+function toast(ico, msg) {
+  document.getElementById('t-ico').textContent = ico;
+  document.getElementById('t-msg').textContent = msg;
+
+  const e = document.getElementById('toast');
+
+  e.classList.add('show');
+
+  clearTimeout(tT);
+
+  tT = setTimeout(() => {
+    e.classList.remove('show');
+  }, 3000);
+}
 
 /* CARD FORMAT */
-document.addEventListener('input',e=>{if(e.target.placeholder==='0000 0000 0000 0000'){const v=e.target.value.replace(/\D/g,'');e.target.value=v.match(/.{1,4}/g)?.join(' ')||v;}});
+document.addEventListener('input', e => {
+  if (
+    e.target.placeholder ===
+    '0000 0000 0000 0000'
+  ) {
+    const v = e.target.value.replace(/\D/g, '');
+
+    e.target.value =
+      v.match(/.{1,4}/g)?.join(' ') || v;
+  }
+});
 
 /* START */
-initHome();renderCat(DB);
+initHome();
+renderCat(DB);
 </script>
 </body>
 </html>
