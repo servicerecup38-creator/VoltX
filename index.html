@@ -1298,11 +1298,13 @@ function placeOrder() {
   nav('success');
 }
 
-/* ACCOUNT */
+/* ACCOUNT *//* ACCOUNT */
 function buildAccount() {
+
   const el = document.getElementById('accountHTML');
 
   if (!loggedIn) {
+
     el.innerHTML = `
       <div class="cart-empty">
 
@@ -1331,21 +1333,23 @@ function buildAccount() {
   }
 
   el.innerHTML = `
+
+    <!-- HERO -->
     <div class="acc-hero">
 
       <div class="avatar">👤</div>
 
       <div>
         <div class="acc-name">
-          Jean Dupont
+      
         </div>
 
         <div class="acc-mail">
-          jean.dupont@email.com
+         
         </div>
 
         <div class="acc-since">
-          Client depuis mai 2025
+          
         </div>
       </div>
 
@@ -1354,9 +1358,248 @@ function buildAccount() {
       </button>
 
     </div>
+
+    <!-- KPIS -->
+    <div class="acc-kpis">
+
+      <div class="kpi">
+        <div class="kpi-n">3</div>
+        <div class="kpi-l">Commandes</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-n">14k€</div>
+        <div class="kpi-l">Total</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-n">1</div>
+        <div class="kpi-l">En cours</div>
+      </div>
+
+    </div>
+
+    <!-- MES ACHATS -->
+    <div class="menu-grp-t">
+      Mes Achats
+    </div>
+
+    <div class="mi" onclick="showOrders()">
+
+      <div
+        class="mi-ico"
+        style="background:rgba(212,247,0,.1)"
+      >
+        📦
+      </div>
+
+      <div style="flex:1">
+
+        <div class="mi-t">
+          Mes Commandes
+        </div>
+
+        <div class="mi-s">
+          3 commandes · 1 en cours
+        </div>
+
+      </div>
+
+      <div class="mi-arr">›</div>
+
+    </div>
+
+    <div class="mi">
+
+      <div
+        class="mi-ico"
+        style="background:rgba(255,59,48,.1)"
+      >
+        ♡
+      </div>
+
+      <div style="flex:1">
+
+        <div class="mi-t">
+          Ma Wishlist
+        </div>
+
+        <div class="mi-s">
+          0 article sauvegardé
+        </div>
+
+      </div>
+
+      <div class="mi-arr">›</div>
+
+    </div>
+
+    <!-- PROFIL -->
+    <div class="menu-grp-t">
+      Mon Profil
+    </div>
+
+    <div class="mi">
+
+      <div
+        class="mi-ico"
+        style="background:rgba(10,132,255,.1)"
+      >
+        📍
+      </div>
+
+      <div style="flex:1">
+
+        <div class="mi-t">
+          Mes Adresses
+        </div>
+
+        <div class="mi-s">
+          1 adresse enregistrée
+        </div>
+
+      </div>
+
+      <div class="mi-arr">›</div>
+
+    </div>
+
+    <div class="mi">
+
+      <div
+        class="mi-ico"
+        style="background:rgba(48,209,88,.1)"
+      >
+        🔔
+      </div>
+
+      <div style="flex:1">
+
+        <div class="mi-t">
+          Notifications
+        </div>
+
+        <div class="mi-s">
+          Actives
+        </div>
+
+      </div>
+
+      <div class="mi-arr">›</div>
+
+    </div>
+
+    <div class="mi">
+
+      <div
+        class="mi-ico"
+        style="background:rgba(142,142,147,.1)"
+      >
+        ⚙️
+      </div>
+
+      <div style="flex:1">
+
+        <div class="mi-t">
+          Paramètres
+        </div>
+
+        <div class="mi-s">
+          Mot de passe · Confidentialité
+        </div>
+
+      </div>
+
+      <div class="mi-arr">›</div>
+
+    </div>
+
+    <!-- SUPPORT -->
+    <div class="menu-grp-t">
+      Assistance
+    </div>
+
+    <div class="mi">
+
+      <div
+        class="mi-ico"
+        style="background:rgba(255,159,10,.1)"
+      >
+        💬
+      </div>
+
+      <div style="flex:1">
+
+        <div class="mi-t">
+          Support Client
+        </div>
+
+        <div class="mi-s">
+          Assistance 7j/7
+        </div>
+
+      </div>
+
+      <div class="mi-arr">›</div>
+
+    </div>
+
+    <div class="mi">
+
+      <div
+        class="mi-ico"
+        style="background:rgba(10,132,255,.1)"
+      >
+        🚚
+      </div>
+
+      <div style="flex:1">
+
+        <div class="mi-t">
+          Suivi Livraison
+        </div>
+
+        <div class="mi-s">
+          Voir vos colis
+        </div>
+
+      </div>
+
+      <div class="mi-arr">›</div>
+
+    </div>
+
+    <!-- LOGOUT -->
+    <div class="menu-grp-t"></div>
+
+    <div class="mi" onclick="doLogout()">
+
+      <div
+        class="mi-ico"
+        style="background:rgba(255,59,48,.1)"
+      >
+        🚪
+      </div>
+
+      <div style="flex:1">
+
+        <div
+          class="mi-t"
+          style="color:var(--red)"
+        >
+          Déconnexion
+        </div>
+
+      </div>
+
+      <div class="mi-arr">›</div>
+
+    </div>
+
+    <div style="height:20px"></div>
+
   `;
 }
-
 /* AUTH */
 function openSheet() {
   document.getElementById('authSheet')
