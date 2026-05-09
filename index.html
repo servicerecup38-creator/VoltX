@@ -355,6 +355,7 @@ body {
 /* TOAST */
 .toast { position:fixed; top:calc(var(--safe-t) + 58px + 10px); left:14px; right:14px; max-width:402px; margin:0 auto; background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:14px; padding:13px 16px; display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; z-index:9999; transform:translateY(-120%); opacity:0; transition:all .3s var(--ease); box-shadow:0 8px 32px rgba(0,0,0,.5); }
 .toast.show { transform:translateY(0); opacity:1; }
+css .pc-img img{   width:110px;   height:auto;   object-fit:contain; }  .pr-img img{   width:90px;   height:auto;   object-fit:contain; }  .det-gal img{   width:85%;   max-width:320px;   object-fit:contain;   z-index:2; }  .ci-img img{   width:55px;   height:auto;   object-fit:contain; } 
 </style>
 </head>
 <body>
@@ -624,14 +625,53 @@ body {
 <script>
 /* DATA */
 const DB=[
-  {id:1,name:'VoltX LightBee X OffRoad',cat:'offroad',price:4790,old:null,badge:'',ico:'🏍️',desc:'Moteur 6000W · 40Ah · 65 km',m:'6000W',b:'60V/40Ah',a:'65 km',v:'45 km/h',p:'47 kg'},
-  {id:2,name:'VoltX LightBee X Homologué',cat:'homologue',price:4990,old:5290,badge:'new',ico:'⚡',desc:'Homologuée route · Garantie 2 ans',m:'6000W',b:'60V/40Ah',a:'65 km',v:'45 km/h',p:'49 kg'},
-  {id:3,name:'VoltX Hyper Bee',cat:'offroad',price:3490,old:null,badge:'new',ico:'🏎️',desc:'Génération compacte · Idéale débutants',m:'3000W',b:'48V/32Ah',a:'50 km',v:'40 km/h',p:'38 kg'},
-  {id:4,name:'VoltX StormBee OffRoad',cat:'offroad',price:9990,old:null,badge:'',ico:'⚡',desc:'14 000W · Enduro électrique ultime',m:'14000W',b:'72V/55Ah',a:'80 km',v:'80 km/h',p:'110 kg'},
-  {id:5,name:'VoltX StormBee Homologué',cat:'homologue',price:10890,old:null,badge:'',ico:'🌩️',desc:'Route homologuée · Carte grise incluse',m:'14000W',b:'72V/55Ah',a:'80 km',v:'80 km/h',p:'112 kg'},
-  {id:6,name:'VoltX UltraBee Pro 125cc',cat:'homologue',price:6990,old:7490,badge:'',ico:'🔥',desc:'V2 · 125cc · Plus puissante',m:'10000W',b:'72V/45Ah',a:'75 km',v:'70 km/h',p:'90 kg'},
-  {id:7,name:'VoltX LightBee Youth',cat:'youth',price:3690,old:null,badge:'',ico:'🟢',desc:'8–15 ans · 1500W · Sécurité max',m:'1500W',b:'48V/20Ah',a:'30 km',v:'25 km/h',p:'29 kg'},
-  {id:8,name:'VoltX UltraBee V1 Déstockage',cat:'homologue',price:6490,old:7490,badge:'',ico:'📦',desc:'Derniers stocks V1 · Prix réduit',m:'10000W',b:'72V/45Ah',a:'70 km',v:'70 km/h',p:'88 kg'},
+  {
+    id:1,
+    name:'VoltX LightBee X OffRoad',
+    cat:'offroad',
+    price:4790,
+    old:null,
+    badge:'',
+    img:'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
+    desc:'Moteur 6000W · 40Ah · 65 km',
+    m:'6000W',
+    b:'60V/40Ah',
+    a:'65 km',
+    v:'45 km/h',
+    p:'47 kg'
+  },
+
+  {
+    id:2,
+    name:'VoltX LightBee X Homologué',
+    cat:'homologue',
+    price:4990,
+    old:5290,
+    badge:'new',
+    img:'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
+    desc:'Homologuée route · Garantie 2 ans',
+    m:'6000W',
+    b:'60V/40Ah',
+    a:'65 km',
+    v:'45 km/h',
+    p:'49 kg'
+  },
+
+  {
+    id:3,
+    name:'VoltX Hyper Bee',
+    cat:'offroad',
+    price:3490,
+    old:null,
+    badge:'new',
+    img:'https://cdn.phototourl.com/free/2026-05-09-af7ac283-2f0b-4d32-ad37-35285d519c93.webp',
+    desc:'Génération compacte · Idéale débutants',
+    m:'3000W',
+    b:'48V/32Ah',
+    a:'50 km',
+    v:'40 km/h',
+    p:'38 kg'
+  }
 ];
 
 let cart=[],loggedIn=false,curProd=null,prevPage='catalog',qty=1;
@@ -658,11 +698,7 @@ function catLbl(c){return c==='offroad'?'Off-Road':c==='homologue'?'Homologué':
 function fmt(n){return n.toLocaleString('fr-FR');}
 
 /* SMALL CARD */
-function smallCard(p){
-  const bdg=p.badge==='new'?'<div class="pc-bdg b-new">NOUVEAU</div>':p.old?'<div class="pc-bdg b-hot">PROMO</div>':'';
-  const oldH=p.old?`<span class="pc-old">${fmt(p.old)}€</span>`:'';
-  return`<div class="pc" onclick="openProd(${p.id})"><div class="pc-img">${p.ico}${bdg}</div><div class="pc-body"><div class="pc-cat">${catLbl(p.cat)}</div><div class="pc-name">${p.name}</div><div class="pc-price">${fmt(p.price)} €${oldH}</div></div></div>`;
-}
+javascript function smallCard(p){   const bdg=p.badge==='new'     ?'<div class="pc-bdg b-new">NOUVEAU</div>'     :p.old     ?'<div class="pc-bdg b-hot">PROMO</div>'     :'';    const oldH=p.old     ?`<span class="pc-old">${fmt(p.old)}€</span>`     :'';    return `   <div class="pc" onclick="openProd(${p.id})">     <div class="pc-img">       <img src="${p.img}" alt="${p.name}">       ${bdg}     </div>      <div class="pc-body">       <div class="pc-cat">${catLbl(p.cat)}</div>       <div class="pc-name">${p.name}</div>       <div class="pc-price">${fmt(p.price)} €${oldH}</div>     </div>   </div>`; } 
 
 /* PROD ROW */
 function prodRow(p){
