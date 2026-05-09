@@ -1,1 +1,780 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#080808">
+<title>VoltX</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg: #080808;
+  --surface: #111111;
+  --surface2: #1a1a1a;
+  --surface3: #222222;
+  --border: #2c2c2c;
+  --accent: #d4f700;
+  --accent-dim: rgba(212,247,0,0.08);
+  --red: #ff3b30;
+  --green: #30d158;
+  --blue: #0a84ff;
+  --orange: #ff9f0a;
+  --white: #ffffff;
+  --g1: #8e8e93;
+  --g2: #636366;
+  --g3: #3a3a3c;
+  --nav: 83px;
+  --safe-b: env(safe-area-inset-bottom, 20px);
+  --safe-t: env(safe-area-inset-top, 44px);
+  --r: 16px;
+  --r2: 12px;
+  --ease: cubic-bezier(.4,0,.2,1);
+}
+html { height:100%; background:#000; }
+body {
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  height:100%;
+  overflow:hidden;
+  max-width:430px;
+  margin:0 auto;
+  -webkit-font-smoothing:antialiased;
+}
+#app { display:flex; flex-direction:column; height:100dvh; }
+.scroll-view { flex:1; overflow-y:auto; overflow-x:hidden; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; }
+.scroll-view::-webkit-scrollbar { display:none; }
+.page { display:none; min-height:100%; }
+.page.active { display:block; animation:fadeUp .22s var(--ease); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
+/* STATUS */
+.status { height:var(--safe-t); min-height:44px; background:var(--bg); display:flex; align-items:flex-end; justify-content:space-between; padding:0 20px 6px; flex-shrink:0; }
+.s-time { font-size:15px; font-weight:700; }
+.s-icons { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--g1); }
+
+/* TOPBAR */
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:8px 16px 10px; flex-shrink:0; }
+.logo { font-family:'Bebas Neue',cursive; font-size:30px; letter-spacing:4px; color:var(--accent); cursor:pointer; }
+.logo b { color:var(--white); }
+.topbar-r { display:flex; gap:8px; }
+.t-btn { width:40px; height:40px; border-radius:12px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; position:relative; transition:.15s; }
+.t-btn:active { transform:scale(.88); }
+.dot-b { position:absolute; top:-3px; right:-3px; min-width:18px; height:18px; background:var(--accent); color:#000; border-radius:9px; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 3px; }
+
+/* BOTTOM NAV */
+.bnav { height:var(--nav); background:rgba(8,8,8,.96); border-top:1px solid var(--border); display:flex; align-items:flex-start; padding-top:10px; padding-bottom:var(--safe-b); flex-shrink:0; backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); }
+.nt { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:2px 0; transition:.15s; }
+.nt:active { transform:scale(.85); }
+.nt-ico { font-size:24px; position:relative; }
+.nt-lbl { font-size:10px; font-weight:600; color:var(--g1); transition:.15s; }
+.nt.on .nt-lbl { color:var(--accent); }
+.nt-dot { position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:var(--accent); display:none; }
+.nt.on .nt-dot { display:block; }
+
+/* HERO */
+.hero { margin:0 14px 14px; border-radius:22px; overflow:hidden; position:relative; min-height:200px; background:linear-gradient(140deg,#0b1700,#111,#0a0a0a); border:1px solid rgba(212,247,0,.13); cursor:pointer; }
+.hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 85% 75% at 85% 45%, rgba(212,247,0,.12) 0%, transparent 65%); }
+.hero-body { position:relative; padding:24px 20px 22px; }
+.hero-tag { display:inline-flex; align-items:center; gap:5px; background:var(--accent); color:#000; font-size:9px; font-weight:800; letter-spacing:2px; text-transform:uppercase; padding:4px 10px; border-radius:20px; margin-bottom:14px; }
+.hero-h1 { font-family:'Bebas Neue',cursive; font-size:52px; line-height:.9; color:#fff; margin-bottom:14px; }
+.hero-h1 em { color:var(--accent); font-style:normal; }
+.hero-sub { font-size:12px; color:var(--g1); margin-bottom:18px; line-height:1.5; max-width:200px; }
+.hero-cta { display:inline-flex; align-items:center; gap:6px; background:var(--accent); color:#000; font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase; padding:11px 18px; border-radius:12px; border:none; cursor:pointer; transition:.15s; }
+.hero-cta:active { transform:scale(.95); }
+.hero-moto { position:absolute; right:-10px; bottom:-6px; font-size:100px; opacity:.1; line-height:1; pointer-events:none; }
+
+/* STATS */
+.stats-row { display:flex; gap:9px; padding:0 14px 14px; }
+.stat-p { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:12px 6px; text-align:center; }
+.stat-n { font-family:'Bebas Neue',cursive; font-size:22px; color:var(--accent); line-height:1; }
+.stat-l { font-size:9px; color:var(--g1); text-transform:uppercase; letter-spacing:.8px; margin-top:3px; }
+
+/* SEC HDR */
+.sec-h { display:flex; align-items:center; justify-content:space-between; padding:6px 18px 12px; }
+.sec-t { font-family:'Bebas Neue',cursive; font-size:22px; letter-spacing:1.5px; }
+.sec-a { font-size:12px; font-weight:700; color:var(--accent); cursor:pointer; }
+
+/* H-SCROLL */
+.hscroll { display:flex; gap:12px; padding:0 14px 16px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
+.hscroll::-webkit-scrollbar { display:none; }
+
+/* SMALL CARD */
+.pc { flex-shrink:0; width:162px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; scroll-snap-align:start; cursor:pointer; transition:.15s; animation:fadeUp .25s var(--ease) both; }
+.pc:active { transform:scale(.96); opacity:.85; }
+.pc-img { height:112px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--surface2),var(--bg)); font-size:54px; position:relative; }
+.pc-bdg { position:absolute; top:8px; left:8px; font-size:8px; font-weight:800; letter-spacing:1px; text-transform:uppercase; padding:3px 7px; border-radius:6px; }
+.b-new { background:var(--accent); color:#000; }
+.b-hot { background:var(--red); color:#fff; }
+.pc-body { padding:10px; }
+.pc-cat { font-size:9px; color:var(--g1); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+.pc-name { font-size:13px; font-weight:700; line-height:1.25; margin-bottom:6px; }
+.pc-price { font-size:16px; font-weight:800; color:var(--accent); }
+.pc-old { font-size:11px; color:var(--g2); text-decoration:line-through; margin-left:4px; }
+
+/* PROMO */
+.promo-c { margin:0 14px 14px; background:linear-gradient(90deg,rgba(255,59,48,.12),rgba(255,59,48,.03)); border:1px solid rgba(255,59,48,.22); border-radius:var(--r); padding:16px; display:flex; align-items:center; gap:14px; cursor:pointer; }
+.promo-c:active { opacity:.8; }
+.promo-ico { font-size:30px; }
+.promo-t { font-size:14px; font-weight:700; color:#ff6b60; }
+.promo-s { font-size:11px; color:var(--g1); margin-top:2px; }
+
+/* WHY */
+.why-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 14px 20px; }
+.why-c { background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); padding:14px; }
+.why-ico { font-size:24px; margin-bottom:8px; }
+.why-t { font-size:12px; font-weight:700; margin-bottom:4px; }
+.why-s { font-size:11px; color:var(--g1); line-height:1.4; }
+
+/* CATALOG */
+.cat-sticky { position:sticky; top:0; z-index:30; background:rgba(8,8,8,.95); padding:10px 14px; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+.search-w { display:flex; align-items:center; gap:10px; background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:10px 14px; margin-bottom:10px; }
+.search-ico { font-size:15px; color:var(--g1); }
+.search-inp { flex:1; background:none; border:none; color:var(--white); font-size:15px; font-family:'Inter',sans-serif; outline:none; }
+.search-inp::placeholder { color:var(--g2); }
+.chips { display:flex; gap:7px; overflow-x:auto; scrollbar-width:none; }
+.chips::-webkit-scrollbar { display:none; }
+.chip { flex-shrink:0; padding:7px 14px; border-radius:20px; font-size:12px; font-weight:700; background:var(--surface2); border:1px solid var(--border); color:var(--g1); cursor:pointer; transition:.15s; }
+.chip:active { transform:scale(.93); }
+.chip.on { background:var(--accent); color:#000; border-color:var(--accent); }
+
+/* PROD ROW */
+.prod-list { padding:10px 14px 20px; display:flex; flex-direction:column; gap:10px; }
+.pr { display:flex; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; cursor:pointer; transition:.15s; position:relative; animation:fadeUp .22s var(--ease) both; }
+.pr:active { transform:scale(.98); opacity:.85; }
+.pr-img { width:108px; min-height:108px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:50px; background:linear-gradient(135deg,var(--surface2),var(--bg)); }
+.pr-info { flex:1; padding:12px; display:flex; flex-direction:column; justify-content:space-between; }
+.pr-cat { font-size:9px; color:var(--g1); letter-spacing:1.2px; text-transform:uppercase; margin-bottom:4px; }
+.pr-name { font-size:15px; font-weight:700; line-height:1.2; margin-bottom:4px; }
+.pr-desc { font-size:11px; color:var(--g1); line-height:1.4; }
+.pr-bot { display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+.pr-price { font-size:18px; font-weight:800; color:var(--accent); }
+.pr-old { font-size:10px; color:var(--g2); text-decoration:line-through; }
+.pr-add { width:34px; height:34px; border-radius:10px; background:var(--accent); border:none; color:#000; font-size:22px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; }
+.pr-add:active { transform:scale(.84); }
+.pr-badge { position:absolute; top:8px; right:8px; font-size:8px; font-weight:800; letter-spacing:1px; padding:2px 7px; border-radius:5px; }
+
+/* DETAIL */
+.det-nav { display:flex; align-items:center; justify-content:space-between; padding:12px 16px 0; }
+.back-pill { display:flex; align-items:center; gap:5px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; transition:.15s; }
+.back-pill:active { transform:scale(.93); }
+.share-b { width:36px; height:36px; border-radius:12px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; }
+.det-gal { margin:12px 14px; height:260px; background:linear-gradient(140deg,var(--surface2),var(--bg)); border-radius:20px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:130px; position:relative; overflow:hidden; }
+.det-gal::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 50% at 75% 40%, rgba(212,247,0,.08) 0%, transparent 60%); pointer-events:none; }
+.det-bdg { position:absolute; top:12px; left:12px; font-size:9px; font-weight:800; letter-spacing:1px; padding:4px 9px; border-radius:6px; z-index:1; }
+.det-thumbs { display:flex; gap:8px; padding:0 14px 14px; overflow-x:auto; scrollbar-width:none; }
+.det-thumbs::-webkit-scrollbar { display:none; }
+.dthumb { flex-shrink:0; width:52px; height:52px; border-radius:10px; background:var(--surface2); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; transition:.15s; }
+.dthumb.on { border-color:var(--accent); background:var(--accent-dim); }
+.det-body { padding:0 14px; }
+.det-cat { font-size:10px; color:var(--g1); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; }
+.det-name { font-family:'Bebas Neue',cursive; font-size:34px; letter-spacing:1px; line-height:1; margin-bottom:14px; }
+.price-row { display:flex; align-items:baseline; gap:10px; margin-bottom:6px; }
+.det-price { font-size:34px; font-weight:900; color:var(--accent); letter-spacing:-1px; }
+.det-old { font-size:16px; color:var(--g2); text-decoration:line-through; }
+.det-note { font-size:11px; color:var(--g2); margin-bottom:16px; }
+.stock-row { display:inline-flex; align-items:center; gap:6px; background:rgba(48,209,88,.1); border:1px solid rgba(48,209,88,.2); border-radius:20px; padding:5px 12px; font-size:11px; font-weight:700; color:var(--green); margin-bottom:18px; }
+.stock-led { width:7px; height:7px; border-radius:50%; background:var(--green); }
+.opt-blk { margin-bottom:18px; }
+.opt-lbl { font-size:10px; font-weight:700; color:var(--g1); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+.opt-row { display:flex; gap:8px; flex-wrap:wrap; }
+.opt-pill { padding:8px 16px; border-radius:10px; background:var(--surface2); border:1.5px solid var(--border); font-size:13px; font-weight:600; cursor:pointer; transition:.15s; }
+.opt-pill:active { transform:scale(.93); }
+.opt-pill.on { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+.acc-hdr { display:flex; justify-content:space-between; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); padding:14px 16px; cursor:pointer; margin-bottom:8px; }
+.acc-hdr:active { opacity:.8; }
+.acc-hl { font-size:14px; font-weight:700; }
+.acc-arr { font-size:14px; color:var(--g1); transition:.25s; }
+.acc-arr.open { transform:rotate(180deg); }
+.acc-body { display:none; background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; margin-bottom:14px; }
+.acc-body.open { display:block; }
+.spec-r { display:flex; justify-content:space-between; padding:11px 16px; border-bottom:1px solid var(--border); font-size:13px; }
+.spec-r:last-child { border-bottom:none; }
+.spec-k { color:var(--g1); }
+.spec-v { font-weight:700; }
+.deliv-row { display:flex; align-items:center; gap:10px; background:rgba(212,247,0,.05); border:1px solid rgba(212,247,0,.12); border-radius:var(--r2); padding:12px 14px; font-size:12px; color:var(--g1); margin-bottom:24px; }
+
+/* BUY BAR */
+.buy-bar { position:sticky; bottom:0; z-index:40; background:rgba(8,8,8,.97); border-top:1px solid var(--border); padding:12px 14px calc(12px + var(--safe-b)); display:flex; align-items:center; gap:10px; backdrop-filter:blur(30px); -webkit-backdrop-filter:blur(30px); }
+.qty-wrap { display:flex; align-items:center; background:var(--surface2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.q-btn { width:38px; height:46px; background:none; border:none; color:var(--white); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:'Inter',sans-serif; }
+.q-btn:active { background:var(--surface3); }
+.q-val { width:36px; text-align:center; font-size:16px; font-weight:700; }
+.add-big { flex:1; background:var(--accent); color:#000; border:none; border-radius:14px; height:48px; font-size:14px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; cursor:pointer; transition:.15s; }
+.add-big:active { transform:scale(.96); filter:brightness(.9); }
+.wish-ico { width:48px; height:48px; background:var(--surface2); border:1px solid var(--border); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; transition:.15s; }
+.wish-ico:active { transform:scale(.88); }
+
+/* CART */
+.cart-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:80px 24px; text-align:center; min-height:55dvh; }
+.empty-ico { font-size:70px; opacity:.14; }
+.empty-t { font-size:22px; font-weight:800; color:var(--g1); }
+.empty-s { font-size:13px; color:var(--g2); }
+.cart-items { padding:12px 14px; display:flex; flex-direction:column; gap:10px; }
+.ci { display:flex; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:14px; align-items:flex-start; }
+.ci-img { width:70px; height:64px; flex-shrink:0; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:32px; }
+.ci-info { flex:1; min-width:0; }
+.ci-name { font-size:14px; font-weight:700; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ci-var { font-size:11px; color:var(--g1); margin-bottom:10px; }
+.ci-bot { display:flex; align-items:center; justify-content:space-between; }
+.ci-price { font-size:18px; font-weight:800; color:var(--accent); }
+.mq { display:flex; align-items:center; background:var(--surface2); border:1px solid var(--border); border-radius:9px; overflow:hidden; }
+.mq-b { width:30px; height:30px; background:none; border:none; color:var(--white); font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.mq-b:active { background:var(--surface3); }
+.mq-v { width:26px; text-align:center; font-size:14px; font-weight:700; }
+.ci-del { font-size:11px; color:var(--g2); cursor:pointer; margin-top:8px; display:inline-block; }
+.ci-del:active { color:var(--red); }
+.sum-card { margin:0 14px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:18px; }
+.sum-r { display:flex; justify-content:space-between; font-size:13px; color:var(--g1); margin-bottom:10px; }
+.sum-total { display:flex; justify-content:space-between; font-size:20px; font-weight:800; padding-top:12px; border-top:1px solid var(--border); margin-top:4px; }
+.sum-tp { color:var(--accent); }
+.coupon-row { display:flex; gap:8px; margin-bottom:14px; }
+.c-in { flex:1; background:var(--surface2); border:1.5px solid var(--border); border-radius:11px; padding:11px 14px; color:var(--white); font-size:14px; font-family:'Inter',sans-serif; outline:none; transition:.15s; }
+.c-in:focus { border-color:var(--accent); }
+.c-btn { background:var(--surface2); border:1.5px solid var(--border); color:var(--accent); padding:11px 16px; border-radius:11px; font-size:13px; font-weight:700; cursor:pointer; }
+.c-btn:active { background:var(--surface3); }
+.cta-wrap { padding:0 14px 20px; }
+.cta-full { width:100%; background:var(--accent); color:#000; border:none; border-radius:16px; padding:17px; font-size:16px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; cursor:pointer; transition:.15s; }
+.cta-full:active { transform:scale(.97); filter:brightness(.9); }
+.safe-note { text-align:center; font-size:11px; color:var(--g2); margin-top:10px; }
+
+/* CHECKOUT */
+.steps-row { display:flex; align-items:center; padding:16px 20px 12px; }
+.step { display:flex; align-items:center; flex:1; }
+.step-c { width:30px; height:30px; border-radius:50%; border:2px solid var(--border); color:var(--g2); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0; transition:.2s; }
+.step.on .step-c { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+.step.done .step-c { border-color:var(--green); background:var(--green); color:#000; }
+.step-l { flex:1; height:1px; background:var(--border); margin:0 6px; }
+.form-sec { margin:0 14px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:18px; }
+.fs-t { font-size:10px; font-weight:800; color:var(--g1); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+.ff { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+.ff:last-child { margin-bottom:0; }
+.fl { font-size:10px; font-weight:700; color:var(--g1); letter-spacing:.5px; text-transform:uppercase; }
+.fi { background:var(--surface2); border:1.5px solid var(--border); border-radius:11px; padding:13px 14px; color:var(--white); font-size:15px; font-family:'Inter',sans-serif; outline:none; width:100%; transition:.15s; }
+.fi:focus { border-color:var(--accent); }
+.frow { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.fsel { background:var(--surface2); border:1.5px solid var(--border); border-radius:11px; padding:13px 14px; color:var(--white); font-size:15px; font-family:'Inter',sans-serif; outline:none; width:100%; }
+.s-opt { display:flex; align-items:center; justify-content:space-between; background:var(--surface2); border:2px solid var(--border); border-radius:12px; padding:14px; margin-bottom:10px; cursor:pointer; transition:.15s; }
+.s-opt:last-child { margin-bottom:0; }
+.s-opt:active { transform:scale(.98); }
+.s-opt.on { border-color:var(--accent); background:var(--accent-dim); }
+.s-left { display:flex; align-items:center; gap:10px; }
+.radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:.15s; }
+.s-opt.on .radio { border-color:var(--accent); }
+.r-dot { width:9px; height:9px; border-radius:50%; background:var(--accent); display:none; }
+.s-opt.on .r-dot { display:block; }
+.s-name { font-size:14px; font-weight:700; }
+.s-time { font-size:11px; color:var(--g1); margin-top:1px; }
+.s-price { font-size:14px; font-weight:800; color:var(--accent); }
+.p-opt { display:flex; align-items:center; gap:12px; background:var(--surface2); border:2px solid var(--border); border-radius:12px; padding:14px; margin-bottom:10px; cursor:pointer; transition:.15s; }
+.p-opt:last-child { margin-bottom:0; }
+.p-opt:active { transform:scale(.98); }
+.p-opt.on { border-color:var(--accent); background:var(--accent-dim); }
+.p-ico { font-size:22px; flex-shrink:0; }
+.p-name { font-size:14px; font-weight:700; }
+.p-desc { font-size:11px; color:var(--g1); }
+.card-ex { display:none; margin:10px 0 0; padding:14px; background:var(--surface); border:1px solid var(--border); border-radius:12px; }
+.card-ex.show { display:block; }
+.co-recap { margin:0 14px 14px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:18px; }
+.co-recap-t { font-size:10px; font-weight:800; color:var(--g1); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+.cr-item { display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid var(--border); }
+.cr-item:last-of-type { border-bottom:none; }
+.cr-total { display:flex; justify-content:space-between; font-size:19px; font-weight:800; padding-top:12px; border-top:1px solid var(--border); margin-top:8px; }
+.cr-tp { color:var(--accent); }
+
+/* ACCOUNT */
+.acc-hero { background:linear-gradient(140deg,#0b1700,#111); border-bottom:1px solid var(--border); padding:22px 18px; display:flex; align-items:center; gap:16px; }
+.avatar { width:62px; height:62px; border-radius:50%; background:rgba(212,247,0,.12); border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+.acc-name { font-family:'Bebas Neue',cursive; font-size:26px; letter-spacing:1px; line-height:1; }
+.acc-mail { font-size:12px; color:var(--g1); margin-top:3px; }
+.acc-since { font-size:11px; color:var(--g2); margin-top:4px; }
+.edit-btn { margin-left:auto; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:8px 14px; font-size:12px; font-weight:700; color:var(--g1); cursor:pointer; align-self:flex-start; }
+.edit-btn:active { transform:scale(.93); }
+.acc-kpis { display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--border); }
+.kpi { padding:16px; text-align:center; border-right:1px solid var(--border); }
+.kpi:last-child { border-right:none; }
+.kpi-n { font-family:'Bebas Neue',cursive; font-size:28px; color:var(--accent); line-height:1; }
+.kpi-l { font-size:9px; color:var(--g1); text-transform:uppercase; letter-spacing:.8px; margin-top:3px; }
+.menu-grp-t { font-size:11px; font-weight:700; color:var(--g2); letter-spacing:1px; text-transform:uppercase; padding:12px 18px 6px; }
+.mi { display:flex; align-items:center; gap:14px; padding:14px 18px; border-bottom:1px solid var(--border); cursor:pointer; transition:.15s; }
+.mi:last-child { border-bottom:none; }
+.mi:active { background:var(--surface); }
+.mi-ico { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+.mi-t { font-size:15px; font-weight:600; }
+.mi-s { font-size:11px; color:var(--g1); margin-top:2px; }
+.mi-arr { color:var(--g2); font-size:17px; margin-left:auto; }
+.ord-list { padding:10px 14px 20px; display:flex; flex-direction:column; gap:10px; }
+.ord-c { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:16px; }
+.ord-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.ord-ref { font-size:14px; font-weight:800; color:var(--accent); }
+.ord-date { font-size:11px; color:var(--g1); }
+.ord-prod { font-size:13px; font-weight:600; margin-bottom:10px; }
+.ord-bot { display:flex; justify-content:space-between; align-items:center; }
+.ord-status { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
+.os-ok { background:rgba(48,209,88,.12); color:var(--green); }
+.os-ship { background:rgba(212,247,0,.1); color:var(--accent); }
+.os-proc { background:rgba(255,159,10,.12); color:var(--orange); }
+.ord-total { font-size:17px; font-weight:800; }
+
+/* SUB HDR */
+.sub-hdr { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--bg); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:40; }
+.sub-back { display:flex; align-items:center; gap:5px; cursor:pointer; font-size:14px; font-weight:600; }
+.sub-back:active { opacity:.7; }
+.sub-ttl { font-family:'Bebas Neue',cursive; font-size:20px; letter-spacing:1.5px; }
+
+/* AUTH SHEET */
+.sheet-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:200; backdrop-filter:blur(6px); }
+.sheet-bg.open { display:block; }
+.sheet { position:fixed; bottom:-100%; left:0; right:0; max-width:430px; margin:0 auto; background:var(--surface); border-top-left-radius:26px; border-top-right-radius:26px; border-top:1px solid var(--border); z-index:210; padding:0 20px calc(30px + var(--safe-b)); transition:bottom .35s var(--ease); max-height:90dvh; overflow-y:auto; }
+.sheet.open { bottom:0; }
+.sh-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:14px auto 22px; }
+.sh-logo { font-family:'Bebas Neue',cursive; font-size:28px; color:var(--accent); letter-spacing:3px; margin-bottom:4px; }
+.sh-sub { font-size:13px; color:var(--g1); margin-bottom:22px; }
+.auth-tabs { display:flex; background:var(--surface2); border-radius:12px; padding:3px; margin-bottom:20px; }
+.a-tab { flex:1; padding:10px; border:none; background:none; color:var(--g1); font-size:14px; font-weight:700; cursor:pointer; border-radius:10px; font-family:'Inter',sans-serif; transition:.15s; }
+.a-tab.on { background:var(--accent); color:#000; }
+.a-form { display:none; flex-direction:column; gap:12px; }
+.a-form.show { display:flex; }
+.forgot { font-size:12px; color:var(--g1); text-align:right; cursor:pointer; }
+
+/* SUCCESS */
+.suc-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:50px 22px; text-align:center; min-height:70dvh; }
+.suc-ring { width:96px; height:96px; border-radius:50%; background:rgba(48,209,88,.1); border:2px solid var(--green); display:flex; align-items:center; justify-content:center; font-size:46px; margin-bottom:26px; animation:popIn .5s var(--ease); }
+@keyframes popIn { 0%{transform:scale(.4);opacity:0} 75%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+.suc-t { font-family:'Bebas Neue',cursive; font-size:38px; letter-spacing:2px; margin-bottom:12px; }
+.suc-s { font-size:13px; color:var(--g1); line-height:1.6; max-width:260px; margin-bottom:24px; }
+.suc-ref { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 22px; font-size:19px; font-weight:800; color:var(--accent); letter-spacing:2px; margin-bottom:32px; }
+.suc-btn { width:100%; background:var(--accent); color:#000; border:none; border-radius:14px; padding:17px; font-size:15px; font-weight:800; cursor:pointer; margin-bottom:10px; transition:.15s; }
+.suc-btn:active { transform:scale(.97); }
+.suc-ghost { width:100%; background:none; border:1.5px solid var(--border); color:var(--g1); border-radius:14px; padding:17px; font-size:15px; font-weight:700; cursor:pointer; transition:.15s; }
+.suc-ghost:active { background:var(--surface); }
+
+/* TOAST */
+.toast { position:fixed; top:calc(var(--safe-t) + 58px + 10px); left:14px; right:14px; max-width:402px; margin:0 auto; background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:14px; padding:13px 16px; display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; z-index:9999; transform:translateY(-120%); opacity:0; transition:all .3s var(--ease); box-shadow:0 8px 32px rgba(0,0,0,.5); }
+.toast.show { transform:translateY(0); opacity:1; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="t-ico">✅</span><span id="t-msg"></span></div>
+
+<!-- SHEET -->
+<div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
+<div class="sheet" id="authSheet">
+  <div class="sh-handle"></div>
+  <div class="sh-logo">VOLTX</div>
+  <div class="sh-sub">Connectez-vous ou créez votre compte</div>
+  <div class="auth-tabs">
+    <button class="a-tab on" onclick="authTab('login',this)">Connexion</button>
+    <button class="a-tab" onclick="authTab('register',this)">Inscription</button>
+  </div>
+  <div class="a-form show" id="loginF">
+    <div class="ff"><label class="fl">Email</label><input class="fi" type="email" placeholder="vous@email.com"></div>
+    <div class="ff"><label class="fl">Mot de passe</label><input class="fi" type="password" placeholder="••••••••"></div>
+    <div class="forgot">Mot de passe oublié ?</div>
+    <button class="cta-full" style="margin-top:4px" onclick="doLogin()">Se Connecter</button>
+  </div>
+  <div class="a-form" id="registerF">
+    <div class="frow">
+      <div class="ff"><label class="fl">Prénom</label><input class="fi" type="text" placeholder="Jean"></div>
+      <div class="ff"><label class="fl">Nom</label><input class="fi" type="text" placeholder="Dupont"></div>
+    </div>
+    <div class="ff"><label class="fl">Email</label><input class="fi" type="email" placeholder="vous@email.com"></div>
+    <div class="ff"><label class="fl">Mot de passe</label><input class="fi" type="password" placeholder="Min. 8 caractères"></div>
+    <button class="cta-full" style="margin-top:4px" onclick="doRegister()">Créer mon compte</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- Status Bar -->
+  <div class="status">
+    <span class="s-time" id="sTime">09:41</span>
+    <div class="s-icons"><span>▲▲▲</span><span>WiFi</span><span>⚡100%</span></div>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="logo" onclick="nav('home')">VOLT<b>X</b></div>
+    <div class="topbar-r">
+      <div class="t-btn" onclick="nav('catalog')">🔍</div>
+      <div class="t-btn" onclick="nav('cart')">🛒<div class="dot-b" id="cDot" style="display:none">0</div></div>
+      <div class="t-btn" onclick="authReq()">👤</div>
+    </div>
+  </div>
+
+  <!-- Scroll View -->
+  <div class="scroll-view" id="sv">
+
+    <!-- HOME -->
+    <div class="page active" id="pg-home">
+      <div class="hero" onclick="nav('catalog')">
+        <div class="hero-body">
+          <div class="hero-tag">⚡ Nouveautés 2025</div>
+          <div class="hero-h1">RIDE<br><em>ELECTRIC</em></div>
+          <div class="hero-sub">E-motos haute performance, route & trail. Zéro émission.</div>
+          <button class="hero-cta" onclick="event.stopPropagation();nav('catalog')">Voir la Gamme →</button>
+        </div>
+        <div class="hero-moto">🏍️</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-p"><div class="stat-n">150+</div><div class="stat-l">Modèles</div></div>
+        <div class="stat-p"><div class="stat-n">4.9★</div><div class="stat-l">Avis</div></div>
+        <div class="stat-p"><div class="stat-n">24H</div><div class="stat-l">Expéd.</div></div>
+        <div class="stat-p"><div class="stat-n">2 ANS</div><div class="stat-l">Garantie</div></div>
+      </div>
+
+      <div class="promo-c" onclick="nav('catalog')">
+        <div class="promo-ico">🎯</div>
+        <div><div class="promo-t">Soldes Printemps — jusqu'à −15%</div><div class="promo-s">Sélection de modèles · Durée limitée</div></div>
+        <span style="color:var(--g2);font-size:18px;margin-left:auto">›</span>
+      </div>
+
+      <div class="sec-h"><div class="sec-t">BEST-SELLERS</div><div class="sec-a" onclick="nav('catalog')">Voir tout ›</div></div>
+      <div class="hscroll" id="homeCards"></div>
+
+      <div class="sec-h"><div class="sec-t">NOUVEAUTÉS</div><div class="sec-a" onclick="nav('catalog')">Voir tout ›</div></div>
+      <div class="hscroll" id="newCards"></div>
+
+      <div class="sec-h"><div class="sec-t">POURQUOI VOLTX</div></div>
+      <div class="why-grid">
+        <div class="why-c"><div class="why-ico">🚀</div><div class="why-t">Livraison Express</div><div class="why-s">24–48h partout en France</div></div>
+        <div class="why-c"><div class="why-ico">🔒</div><div class="why-t">Paiement Sécurisé</div><div class="why-s">CB, PayPal, 3× sans frais</div></div>
+        <div class="why-c"><div class="why-ico">🔧</div><div class="why-t">SAV & Atelier</div><div class="why-s">Techniciens certifiés</div></div>
+        <div class="why-c"><div class="why-ico">↩️</div><div class="why-t">Retour 30 Jours</div><div class="why-s">Satisfait ou remboursé</div></div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+
+    <!-- CATALOG -->
+    <div class="page" id="pg-catalog">
+      <div class="cat-sticky">
+        <div class="search-w">
+          <span class="search-ico">🔍</span>
+          <input class="search-inp" type="search" placeholder="Rechercher une moto…" oninput="doSearch(this.value)">
+        </div>
+        <div class="chips">
+          <div class="chip on" onclick="filterCat('all',this)">Tous</div>
+          <div class="chip" onclick="filterCat('offroad',this)">Off-Road</div>
+          <div class="chip" onclick="filterCat('homologue',this)">Homologué</div>
+          <div class="chip" onclick="filterCat('youth',this)">Youth</div>
+          <div class="chip" onclick="filterCat('promo',this)">🔥 Promos</div>
+        </div>
+      </div>
+      <div class="prod-list" id="prodList"></div>
+    </div>
+
+    <!-- PRODUCT DETAIL -->
+    <div class="page" id="pg-product">
+      <div class="det-nav">
+        <div class="back-pill" onclick="nav(prevPage)">‹ <span id="backLbl">Catalogue</span></div>
+        <div class="share-b">⬆️</div>
+      </div>
+      <div class="det-gal"><span id="dIco">🏍️</span><div class="det-bdg b-new" id="dBdg" style="display:none">NOUVEAU</div></div>
+      <div class="det-thumbs">
+        <div class="dthumb on">🏍️</div><div class="dthumb">⚡</div><div class="dthumb">🔋</div><div class="dthumb">🔧</div>
+      </div>
+      <div class="det-body">
+        <div class="det-cat" id="dCat">Off-Road</div>
+        <div class="det-name" id="dName">VoltX LightBee X</div>
+        <div class="price-row">
+          <div class="det-price" id="dPrice">4 790 €</div>
+          <div class="det-old" id="dOld" style="display:none"></div>
+        </div>
+        <div class="det-note">Prix TTC · Livraison offerte</div>
+        <div class="stock-row"><div class="stock-led"></div>En stock — Expédition 48h</div>
+        <div class="opt-blk">
+          <div class="opt-lbl">Couleur</div>
+          <div class="opt-row">
+            <div class="opt-pill on" onclick="pickOpt(this)">Noir Mat</div>
+            <div class="opt-pill" onclick="pickOpt(this)">Blanc</div>
+            <div class="opt-pill" onclick="pickOpt(this)">Rouge</div>
+          </div>
+        </div>
+        <div class="opt-blk">
+          <div class="opt-lbl">Batterie</div>
+          <div class="opt-row">
+            <div class="opt-pill on" onclick="pickOpt(this)">32Ah Standard</div>
+            <div class="opt-pill" onclick="pickOpt(this)">40Ah +250€</div>
+          </div>
+        </div>
+        <div class="acc-hdr" onclick="toggleAcc()">
+          <div class="acc-hl">📋 Caractéristiques techniques</div>
+          <span class="acc-arr" id="accArr">▾</span>
+        </div>
+        <div class="acc-body" id="accBody">
+          <div class="spec-r"><span class="spec-k">Moteur</span><span class="spec-v" id="sp-m">—</span></div>
+          <div class="spec-r"><span class="spec-k">Batterie</span><span class="spec-v" id="sp-b">—</span></div>
+          <div class="spec-r"><span class="spec-k">Autonomie</span><span class="spec-v" id="sp-a">—</span></div>
+          <div class="spec-r"><span class="spec-k">Vitesse max</span><span class="spec-v" id="sp-v">—</span></div>
+          <div class="spec-r"><span class="spec-k">Poids</span><span class="spec-v" id="sp-p">—</span></div>
+          <div class="spec-r"><span class="spec-k">Recharge</span><span class="spec-v">~3h</span></div>
+          <div class="spec-r"><span class="spec-k">Garantie</span><span class="spec-v">2 ans pièces & MO</span></div>
+        </div>
+        <div class="deliv-row">🚚 Livraison offerte · France métropolitaine · 3–5 jours ouvrés</div>
+      </div>
+      <div class="buy-bar">
+        <div class="qty-wrap">
+          <button class="q-btn" onclick="chgQty(-1)">−</button>
+          <div class="q-val" id="qVal">1</div>
+          <button class="q-btn" onclick="chgQty(1)">+</button>
+        </div>
+        <button class="add-big" onclick="addNow()">Ajouter au Panier</button>
+        <div class="wish-ico">♡</div>
+      </div>
+    </div>
+
+    <!-- CART -->
+    <div class="page" id="pg-cart"><div id="cartHTML"></div></div>
+
+    <!-- CHECKOUT -->
+    <div class="page" id="pg-checkout">
+      <div class="steps-row">
+        <div class="step on"><div class="step-c">1</div></div><div class="step-l"></div>
+        <div class="step"><div class="step-c">2</div></div><div class="step-l"></div>
+        <div class="step"><div class="step-c">3</div></div><div class="step-l"></div>
+        <div class="step"><div class="step-c">4</div></div>
+      </div>
+      <div class="form-sec">
+        <div class="fs-t">Informations personnelles</div>
+        <div class="frow">
+          <div class="ff"><label class="fl">Prénom *</label><input class="fi" type="text" placeholder="Jean"></div>
+          <div class="ff"><label class="fl">Nom *</label><input class="fi" type="text" placeholder="Dupont"></div>
+        </div>
+        <div class="ff"><label class="fl">Email *</label><input class="fi" type="email" placeholder="jean@email.com"></div>
+        <div class="ff"><label class="fl">Téléphone *</label><input class="fi" type="tel" placeholder="+33 6 00 00 00 00"></div>
+      </div>
+      <div class="form-sec">
+        <div class="fs-t">Adresse de livraison</div>
+        <div class="ff"><label class="fl">Adresse *</label><input class="fi" type="text" placeholder="12 rue de la Liberté"></div>
+        <div class="ff"><label class="fl">Complément</label><input class="fi" type="text" placeholder="Bâtiment, étage…"></div>
+        <div class="frow">
+          <div class="ff"><label class="fl">Code Postal *</label><input class="fi" type="text" placeholder="75001"></div>
+          <div class="ff"><label class="fl">Ville *</label><input class="fi" type="text" placeholder="Paris"></div>
+        </div>
+        <div class="ff"><label class="fl">Pays</label><select class="fsel"><option>France</option><option>Belgique</option><option>Suisse</option><option>Monaco</option></select></div>
+      </div>
+      <div class="form-sec">
+        <div class="fs-t">Mode de livraison</div>
+        <div class="s-opt on" onclick="pickShip(this)"><div class="s-left"><div class="radio"><div class="r-dot"></div></div><div><div class="s-name">Colissimo Standard</div><div class="s-time">3–5 jours ouvrés</div></div></div><div class="s-price">OFFERTE</div></div>
+        <div class="s-opt" onclick="pickShip(this)"><div class="s-left"><div class="radio"><div class="r-dot"></div></div><div><div class="s-name">Chronopost Express</div><div class="s-time">24–48h garantis</div></div></div><div class="s-price">+29 €</div></div>
+        <div class="s-opt" onclick="pickShip(this)"><div class="s-left"><div class="radio"><div class="r-dot"></div></div><div><div class="s-name">Retrait boutique</div><div class="s-time">Carros (06) · sous 24h</div></div></div><div class="s-price">GRATUIT</div></div>
+      </div>
+      <div class="form-sec">
+        <div class="fs-t">Moyen de paiement</div>
+        <div class="p-opt on" onclick="pickPay(this,'card')"><div class="radio"><div class="r-dot"></div></div><span class="p-ico">💳</span><div><div class="p-name">Carte Bancaire</div><div class="p-desc">Visa · Mastercard · Amex</div></div></div>
+        <div class="card-ex show" id="cardEx">
+          <div class="ff"><label class="fl">N° de carte</label><input class="fi" type="text" placeholder="0000 0000 0000 0000" maxlength="19"></div>
+          <div class="frow"><div class="ff"><label class="fl">Expiration</label><input class="fi" type="text" placeholder="MM/AA"></div><div class="ff"><label class="fl">CVV</label><input class="fi" type="text" placeholder="123" maxlength="4"></div></div>
+          <div class="ff"><label class="fl">Nom sur la carte</label><input class="fi" type="text" placeholder="JEAN DUPONT"></div>
+        </div>
+        <div class="p-opt" onclick="pickPay(this,'paypal')"><div class="radio"><div class="r-dot"></div></div><span class="p-ico">🅿️</span><div><div class="p-name">PayPal</div><div class="p-desc">Paiement sécurisé</div></div></div>
+        <div class="p-opt" onclick="pickPay(this,'alma')"><div class="radio"><div class="r-dot"></div></div><span class="p-ico">📅</span><div><div class="p-name">3× sans frais</div><div class="p-desc">Alma · jusqu'à 4 000 €</div></div></div>
+        <div class="p-opt" onclick="pickPay(this,'wire')"><div class="radio"><div class="r-dot"></div></div><span class="p-ico">🏦</span><div><div class="p-name">Virement bancaire</div><div class="p-desc">Expédition après réception</div></div></div>
+      </div>
+      <div class="co-recap" id="coRecap">
+        <div class="co-recap-t">Récapitulatif</div>
+        <div id="coItems"></div>
+        <div class="sum-r" style="margin-top:10px"><span>Livraison</span><span style="color:var(--green)">Offerte</span></div>
+        <div class="cr-total"><span>Total TTC</span><span class="cr-tp" id="coTotal">0 €</span></div>
+      </div>
+      <div class="cta-wrap">
+        <button class="cta-full" onclick="placeOrder()">🔒 Valider ma commande</button>
+        <div class="safe-note">🔒 Paiement 100% sécurisé · SSL · RGPD</div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT -->
+    <div class="page" id="pg-account"><div id="accountHTML"></div></div>
+
+    <!-- SUCCESS -->
+    <div class="page" id="pg-success">
+      <div class="suc-wrap">
+        <div class="suc-ring">✓</div>
+        <div class="suc-t">COMMANDE<br>CONFIRMÉE !</div>
+        <div class="suc-s">Merci pour votre achat ! Un email de confirmation a été envoyé avec votre suivi.</div>
+        <div class="suc-ref" id="sucRef">#VX-000000</div>
+        <button class="suc-btn" onclick="nav('account')">Voir ma commande</button>
+        <button class="suc-ghost" onclick="nav('home')">Retour à l'accueil</button>
+      </div>
+    </div>
+
+  </div><!-- /scroll-view -->
+
+  <!-- Bottom Nav -->
+  <nav class="bnav">
+    <div class="nt on" id="nt-home" onclick="nav('home')"><div class="nt-ico">🏠<div class="nt-dot"></div></div><div class="nt-lbl">Accueil</div></div>
+    <div class="nt" id="nt-catalog" onclick="nav('catalog')"><div class="nt-ico">🏍️<div class="nt-dot"></div></div><div class="nt-lbl">Catalogue</div></div>
+    <div class="nt" id="nt-cart" onclick="nav('cart')">
+      <div class="nt-ico" style="position:relative">🛒
+        <div class="dot-b" id="nDot" style="display:none;position:absolute;top:-4px;right:-4px">0</div>
+        <div class="nt-dot"></div>
+      </div>
+      <div class="nt-lbl">Panier</div>
+    </div>
+    <div class="nt" id="nt-account" onclick="authReq()"><div class="nt-ico">👤<div class="nt-dot"></div></div><div class="nt-lbl">Compte</div></div>
+  </nav>
+</div>
+
+<script>
+/* DATA */
+const DB=[
+  {id:1,name:'VoltX LightBee X OffRoad',cat:'offroad',price:4790,old:null,badge:'',ico:'🏍️',desc:'Moteur 6000W · 40Ah · 65 km',m:'6000W',b:'60V/40Ah',a:'65 km',v:'45 km/h',p:'47 kg'},
+  {id:2,name:'VoltX LightBee X Homologué',cat:'homologue',price:4990,old:5290,badge:'new',ico:'⚡',desc:'Homologuée route · Garantie 2 ans',m:'6000W',b:'60V/40Ah',a:'65 km',v:'45 km/h',p:'49 kg'},
+  {id:3,name:'VoltX Hyper Bee',cat:'offroad',price:3490,old:null,badge:'new',ico:'🏎️',desc:'Génération compacte · Idéale débutants',m:'3000W',b:'48V/32Ah',a:'50 km',v:'40 km/h',p:'38 kg'},
+  {id:4,name:'VoltX StormBee OffRoad',cat:'offroad',price:9990,old:null,badge:'',ico:'⚡',desc:'14 000W · Enduro électrique ultime',m:'14000W',b:'72V/55Ah',a:'80 km',v:'80 km/h',p:'110 kg'},
+  {id:5,name:'VoltX StormBee Homologué',cat:'homologue',price:10890,old:null,badge:'',ico:'🌩️',desc:'Route homologuée · Carte grise incluse',m:'14000W',b:'72V/55Ah',a:'80 km',v:'80 km/h',p:'112 kg'},
+  {id:6,name:'VoltX UltraBee Pro 125cc',cat:'homologue',price:6990,old:7490,badge:'',ico:'🔥',desc:'V2 · 125cc · Plus puissante',m:'10000W',b:'72V/45Ah',a:'75 km',v:'70 km/h',p:'90 kg'},
+  {id:7,name:'VoltX LightBee Youth',cat:'youth',price:3690,old:null,badge:'',ico:'🟢',desc:'8–15 ans · 1500W · Sécurité max',m:'1500W',b:'48V/20Ah',a:'30 km',v:'25 km/h',p:'29 kg'},
+  {id:8,name:'VoltX UltraBee V1 Déstockage',cat:'homologue',price:6490,old:7490,badge:'',ico:'📦',desc:'Derniers stocks V1 · Prix réduit',m:'10000W',b:'72V/45Ah',a:'70 km',v:'70 km/h',p:'88 kg'},
+];
+
+let cart=[],loggedIn=false,curProd=null,prevPage='catalog',qty=1;
+
+/* TIME */
+(function tick(){const n=new Date();document.getElementById('sTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');setTimeout(tick,10000);})();
+
+/* NAV */
+const NM={home:'nt-home',catalog:'nt-catalog',cart:'nt-cart',account:'nt-account'};
+function nav(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('pg-'+p)?.classList.add('active');
+  document.getElementById('sv').scrollTop=0;
+  document.querySelectorAll('.nt').forEach(x=>x.classList.remove('on'));
+  if(NM[p])document.getElementById(NM[p])?.classList.add('on');
+  if(p==='cart')buildCart();
+  if(p==='checkout')buildCheckout();
+  if(p==='account')buildAccount();
+}
+function authReq(){loggedIn?nav('account'):openSheet();}
+
+/* HELPERS */
+function catLbl(c){return c==='offroad'?'Off-Road':c==='homologue'?'Homologué':'Youth';}
+function fmt(n){return n.toLocaleString('fr-FR');}
+
+/* SMALL CARD */
+function smallCard(p){
+  const bdg=p.badge==='new'?'<div class="pc-bdg b-new">NOUVEAU</div>':p.old?'<div class="pc-bdg b-hot">PROMO</div>':'';
+  const oldH=p.old?`<span class="pc-old">${fmt(p.old)}€</span>`:'';
+  return`<div class="pc" onclick="openProd(${p.id})"><div class="pc-img">${p.ico}${bdg}</div><div class="pc-body"><div class="pc-cat">${catLbl(p.cat)}</div><div class="pc-name">${p.name}</div><div class="pc-price">${fmt(p.price)} €${oldH}</div></div></div>`;
+}
+
+/* PROD ROW */
+function prodRow(p){
+  const bdg=p.badge==='new'?'<div class="pr-badge b-new">NOUVEAU</div>':p.old?'<div class="pr-badge b-hot">PROMO</div>':'';
+  const oldH=p.old?`<div class="pr-old">${fmt(p.old)} €</div>`:'';
+  return`<div class="pr" onclick="openProd(${p.id})"><div class="pr-img">${p.ico}</div><div class="pr-info"><div><div class="pr-cat">${catLbl(p.cat)}</div><div class="pr-name">${p.name}</div><div class="pr-desc">${p.desc}</div></div><div class="pr-bot"><div><div class="pr-price">${fmt(p.price)} €</div>${oldH}</div><button class="pr-add" onclick="event.stopPropagation();quickAdd(${p.id})">+</button></div></div>${bdg}</div>`;
+}
+
+/* INIT */
+function initHome(){
+  document.getElementById('homeCards').innerHTML=[DB[0],DB[2],DB[5]].map(smallCard).join('');
+  document.getElementById('newCards').innerHTML=DB.filter(p=>p.badge==='new').map(smallCard).join('');
+}
+function renderCat(list){document.getElementById('prodList').innerHTML=list.map(prodRow).join('');}
+
+function filterCat(cat,el){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');
+  renderCat(cat==='all'?DB:cat==='promo'?DB.filter(p=>p.old):DB.filter(p=>p.cat===cat));
+}
+function doSearch(q){renderCat(q.length<2?DB:DB.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.desc.toLowerCase().includes(q.toLowerCase())));}
+
+/* PRODUCT DETAIL */
+function openProd(id){
+  prevPage=document.querySelector('.page.active')?.id?.replace('pg-','')||'catalog';
+  curProd=DB.find(p=>p.id===id);if(!curProd)return;
+  qty=1;document.getElementById('qVal').textContent=1;
+  document.getElementById('dIco').textContent=curProd.ico;
+  document.getElementById('dName').textContent=curProd.name;
+  document.getElementById('dCat').textContent=catLbl(curProd.cat);
+  document.getElementById('dPrice').textContent=fmt(curProd.price)+' €';
+  const oe=document.getElementById('dOld');
+  oe.style.display=curProd.old?'block':'none';if(curProd.old)oe.textContent=fmt(curProd.old)+' €';
+  const be=document.getElementById('dBdg');
+  if(curProd.badge==='new'){be.textContent='NOUVEAU';be.className='det-bdg b-new';be.style.display='block';}
+  else if(curProd.old){be.textContent='PROMO';be.className='det-bdg b-hot';be.style.display='block';}
+  else be.style.display='none';
+  ['m','b','a','v','p'].forEach(k=>document.getElementById('sp-'+k).textContent=curProd[k]);
+  document.getElementById('accBody').classList.remove('open');
+  document.getElementById('accArr').classList.remove('open');
+  document.getElementById('backLbl').textContent=prevPage==='home'?'Accueil':'Catalogue';
+  document.querySelectorAll('#pg-product .opt-pill').forEach(o=>o.classList.remove('on'));
+  document.querySelectorAll('#pg-product .opt-row').forEach(r=>r.firstElementChild?.classList.add('on'));
+  nav('product');
+}
+function pickOpt(el){el.closest('.opt-row').querySelectorAll('.opt-pill').forEach(o=>o.classList.remove('on'));el.classList.add('on');}
+function toggleAcc(){document.getElementById('accBody').classList.toggle('open');document.getElementById('accArr').classList.toggle('open');}
+function chgQty(d){qty=Math.max(1,qty+d);document.getElementById('qVal').textContent=qty;}
+
+/* CART */
+function addNow(){
+  if(!curProd)return;
+  const col=document.querySelector('#pg-product .opt-pill.on')?.textContent||'Standard';
+  const ex=cart.find(i=>i.id===curProd.id&&i.var===col);
+  if(ex)ex.qty+=qty;else cart.push({...curProd,qty,var:col});
+  updBadge();toast('✅',`${curProd.name} ajouté !`);nav('cart');
+}
+function quickAdd(id){
+  const p=DB.find(x=>x.id===id);if(!p)return;
+  const ex=cart.find(i=>i.id===id);
+  if(ex)ex.qty++;else cart.push({...p,qty:1,var:'Standard'});
+  updBadge();toast('✅',`${p.name} ajouté !`);
+}
+function rmItem(id){cart=cart.filter(i=>i.id!==id);updBadge();buildCart();}
+function chgItem(id,d){const i=cart.find(x=>x.id===id);if(i)i.qty=Math.max(1,i.qty+d);updBadge();buildCart();}
+function total(){return cart.reduce((s,i)=>s+i.price*i.qty,0);}
+function updBadge(){
+  const n=cart.reduce((s,i)=>s+i.qty,0);
+  ['cDot','nDot'].forEach(id=>{const e=document.getElementById(id);if(e){e.style.display=n?'flex':'none';e.textContent=n;}});
+}
+function buildCart(){
+  const el=document.getElementById('cartHTML');
+  if(!cart.length){el.innerHTML=`<div class="cart-empty"><div class="empty-ico">🛒</div><div class="empty-t">Panier vide</div><div class="empty-s">Ajoutez des motos depuis le catalogue</div><button class="cta-full" style="width:auto;padding:13px 28px;margin-top:4px" onclick="nav('catalog')">Voir le Catalogue</button></div>`;return;}
+  const items=cart.map(i=>`<div class="ci"><div class="ci-img">${i.ico}</div><div class="ci-info"><div class="ci-name">${i.name}</div><div class="ci-var">${i.var} · ${fmt(i.price)} €/u</div><div class="ci-bot"><div class="mq"><button class="mq-b" onclick="chgItem(${i.id},-1)">−</button><div class="mq-v">${i.qty}</div><button class="mq-b" onclick="chgItem(${i.id},1)">+</button></div><div class="ci-price">${fmt(i.price*i.qty)} €</div></div><div class="ci-del" onclick="rmItem(${i.id})">🗑 Supprimer</div></div></div>`).join('');
+  const t=total();
+  el.innerHTML=`<div class="cart-items">${items}</div><div class="sum-card"><div class="coupon-row"><input class="c-in" id="cpIn" placeholder="Code promo"><button class="c-btn" onclick="applyCoupon()">Appliquer</button></div><div class="sum-r"><span>Sous-total</span><span>${fmt(t)} €</span></div><div class="sum-r"><span>Livraison</span><span style="color:var(--green)">OFFERTE</span></div><div class="sum-total"><span>Total TTC</span><span class="sum-tp">${fmt(t)} €</span></div></div><div class="cta-wrap"><button class="cta-full" onclick="nav('checkout')">Commander — ${fmt(t)} € →</button><div class="safe-note">🔒 Paiement 100% sécurisé</div></div>`;
+}
+function applyCoupon(){const c=document.getElementById('cpIn')?.value?.toUpperCase();c==='VOLTX10'?toast('🎉','Code −10% appliqué !'):toast('❌','Code invalide');}
+function buildCheckout(){
+  document.getElementById('coItems').innerHTML=cart.map(i=>`<div class="cr-item"><span>${i.ico} ${i.name} ×${i.qty}</span><span style="color:var(--accent);font-weight:700">${fmt(i.price*i.qty)} €</span></div>`).join('');
+  document.getElementById('coTotal').textContent=fmt(total())+' €';
+}
+function pickShip(el){document.querySelectorAll('.s-opt').forEach(o=>o.classList.remove('on'));el.classList.add('on');}
+function pickPay(el,t){document.querySelectorAll('.p-opt').forEach(o=>o.classList.remove('on'));el.classList.add('on');document.getElementById('cardEx').classList.toggle('show',t==='card');}
+function placeOrder(){const r='#VX-'+Date.now().toString().slice(-6);document.getElementById('sucRef').textContent=r;cart=[];updBadge();nav('success');}
+
+/* ACCOUNT */
+function buildAccount(){
+  const el=document.getElementById('accountHTML');
+  if(!loggedIn){el.innerHTML=`<div class="cart-empty"><div class="empty-ico">👤</div><div class="empty-t">Mon Compte</div><div class="empty-s">Connectez-vous pour accéder à votre espace</div><button class="cta-full" style="width:auto;padding:13px 28px;margin-top:4px" onclick="openSheet()">Se Connecter</button></div>`;return;}
+  el.innerHTML=`<div class="acc-hero"><div class="avatar">👤</div><div><div class="acc-name">Jean Dupont</div><div class="acc-mail">jean.dupont@email.com</div><div class="acc-since">Client depuis mai 2025</div></div><button class="edit-btn">Modifier</button></div><div class="acc-kpis"><div class="kpi"><div class="kpi-n">3</div><div class="kpi-l">Commandes</div></div><div class="kpi"><div class="kpi-n">14k€</div><div class="kpi-l">Total</div></div><div class="kpi"><div class="kpi-n">1</div><div class="kpi-l">En cours</div></div></div><div class="menu-grp-t">Mes Achats</div><div class="mi" onclick="showOrders()"><div class="mi-ico" style="background:rgba(212,247,0,.1)">📦</div><div style="flex:1"><div class="mi-t">Mes Commandes</div><div class="mi-s">3 commandes · 1 en cours</div></div><div class="mi-arr">›</div></div><div class="mi"><div class="mi-ico" style="background:rgba(255,59,48,.1)">♡</div><div style="flex:1"><div class="mi-t">Ma Wishlist</div><div class="mi-s">0 article sauvegardé</div></div><div class="mi-arr">›</div></div><div class="menu-grp-t">Mon Profil</div><div class="mi"><div class="mi-ico" style="background:rgba(10,132,255,.1)">📍</div><div style="flex:1"><div class="mi-t">Mes Adresses</div><div class="mi-s">1 adresse enregistrée</div></div><div class="mi-arr">›</div></div><div class="mi"><div class="mi-ico" style="background:rgba(48,209,88,.1)">🔔</div><div style="flex:1"><div class="mi-t">Notifications</div><div class="mi-s">Actives</div></div><div class="mi-arr">›</div></div><div class="mi"><div class="mi-ico" style="background:rgba(142,142,147,.1)">⚙️</div><div style="flex:1"><div class="mi-t">Paramètres</div><div class="mi-s">Mot de passe · Confidentialité</div></div><div class="mi-arr">›</div></div><div class="menu-grp-t"></div><div class="mi" onclick="doLogout()"><div class="mi-ico" style="background:rgba(255,59,48,.1)">🚪</div><div style="flex:1"><div class="mi-t" style="color:var(--red)">Déconnexion</div></div><div class="mi-arr">›</div></div><div style="height:20px"></div>`;
+}
+function showOrders(){
+  document.getElementById('accountHTML').innerHTML=`<div class="sub-hdr"><div class="sub-back" onclick="buildAccount()">‹ Compte</div><div class="sub-ttl">COMMANDES</div><div></div></div><div class="ord-list"><div class="ord-c"><div class="ord-top"><div class="ord-ref">#VX-2025-001</div><div class="ord-date">02 mai 2025</div></div><div class="ord-prod">🏍️ VoltX LightBee X OffRoad</div><div class="ord-bot"><span class="ord-status os-ok">✓ Livré</span><div class="ord-total">4 790 €</div></div></div><div class="ord-c"><div class="ord-top"><div class="ord-ref">#VX-2025-002</div><div class="ord-date">08 mai 2025</div></div><div class="ord-prod">🔥 VoltX UltraBee Pro 125cc</div><div class="ord-bot"><span class="ord-status os-ship">↗ Expédié</span><div class="ord-total">6 990 €</div></div></div><div class="ord-c"><div class="ord-top"><div class="ord-ref">#VX-2025-003</div><div class="ord-date">09 mai 2025</div></div><div class="ord-prod">🌩️ VoltX StormBee Homologué</div><div class="ord-bot"><span class="ord-status os-proc">⏳ En traitement</span><div class="ord-total">10 890 €</div></div></div></div>`;
+}
+
+/* AUTH */
+function openSheet(){document.getElementById('authSheet').classList.add('open');document.getElementById('sheetBg').classList.add('open');}
+function closeSheet(){document.getElementById('authSheet').classList.remove('open');document.getElementById('sheetBg').classList.remove('open');}
+function authTab(t,el){document.querySelectorAll('.a-tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');document.getElementById('loginF').classList.toggle('show',t==='login');document.getElementById('registerF').classList.toggle('show',t==='register');}
+function doLogin(){loggedIn=true;closeSheet();toast('✅','Connexion réussie !');nav('account');}
+function doRegister(){loggedIn=true;closeSheet();toast('🎉','Bienvenue chez VoltX !');nav('account');}
+function doLogout(){loggedIn=false;toast('👋','À bientôt !');nav('home');}
+
+/* TOAST */
+let tT;
+function toast(ico,msg){document.getElementById('t-ico').textContent=ico;document.getElementById('t-msg').textContent=msg;const e=document.getElementById('toast');e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),3000);}
+
+/* CARD FORMAT */
+document.addEventListener('input',e=>{if(e.target.placeholder==='0000 0000 0000 0000'){const v=e.target.value.replace(/\D/g,'');e.target.value=v.match(/.{1,4}/g)?.join(' ')||v;}});
+
+/* START */
+initHome();renderCat(DB);
+</script>
+</body>
+</html>
