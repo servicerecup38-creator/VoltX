@@ -830,16 +830,6 @@ var orders = [
   {ref:'#VX-2025-003',date:'22 Avr 2025',prod:'VoltX LightBee X OffRoad',total:'4 790 €',status:'proc',label:'⏳ En préparation'}
 ];
 
-/* ──────────────────────────────────────────
-   CLOCK
-────────────────────────────────────────── */
-function tick() {
-  var n = new Date();
-  document.getElementById('sTime').textContent =
-    ('0'+n.getHours()).slice(-2) + ':' + ('0'+n.getMinutes()).slice(-2);
-  setTimeout(tick, 10000);
-}
-tick();
 
 /* ──────────────────────────────────────────
    HELPERS
