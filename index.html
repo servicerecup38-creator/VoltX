@@ -2030,10 +2030,202 @@ color:var(--accent);
 }
 
 }
+   /* ════════════════════════════════════
+   GLOBAL LAYOUT SYSTEM
+════════════════════════════════════ */
+
+:root{
+--app-width:520px;
+--page-pad:16px;
+--section-gap:22px;
+}
+
+/* APP */
+
+body{
+display:flex;
+justify-content:center;
+background:#000;
+}
+
+#app{
+width:100%;
+max-width:var(--app-width);
+min-height:100vh;
+position:relative;
+background:
+linear-gradient(
+180deg,
+#050505,
+#070b14,
+#000
+);
+overflow:hidden;
+}
+
+/* PAGES */
+
+.page{
+width:100%;
+max-width:100%;
+overflow:hidden;
+}
+
+/* GLOBAL SECTIONS */
+
+.section,
+.prod-list,
+.cart-items,
+.det-body{
+padding-left:var(--page-pad)!important;
+padding-right:var(--page-pad)!important;
+}
+
+/* TITLES */
+
+.sec-t{
+margin-bottom:18px;
+line-height:.95;
+}
+
+/* SPACING */
+
+.hero,
+.stats-grid,
+.hscroll,
+.why-grid,
+.footer,
+.prod-list,
+.cart-items{
+margin-bottom:var(--section-gap);
+}
+
+/* CARDS */
+
+.stat-p,
+.pc,
+.why-c,
+.pr,
+.ci,
+.sum-card,
+.review-card,
+.faq-item{
+background:rgba(255,255,255,.045);
+border:1px solid rgba(255,255,255,.07);
+backdrop-filter:blur(20px);
+}
+
+/* NAVBAR */
+
+.navbar{
+width:100%;
+max-width:var(--app-width);
+left:50%;
+transform:translateX(-50%);
+}
+
+/* BOTTOM NAV */
+
+.bnav{
+width:100%;
+max-width:var(--app-width);
+left:50%;
+transform:translateX(-50%);
+border-radius:22px 22px 0 0;
+}
+
+/* BUY BAR */
+
+.buy-bar{
+width:100%;
+max-width:var(--app-width);
+left:50%;
+transform:translateX(-50%);
+}
+
+/* CHECKOUT */
+
+.checkout-page{
+padding:
+90px
+var(--page-pad)
+140px;
+}
+
+.checkout-card{
+padding:22px;
+border-radius:28px;
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);
+margin-bottom:18px;
+}
+
+/* INPUTS */
+
+.fi,
+.fsel{
+width:100%;
+}
+
+/* PRODUCT PAGE */
+
+.det-gal{
+margin:0 var(--page-pad);
+}
+
+/* EMPTY CART */
+
+.cart-empty{
+padding:40px 24px 140px;
+}
+
+/* BUTTONS */
+
+.hero-cta,
+.hero-ghost,
+.add-big,
+.cta-full{
+border-radius:20px;
+}
+
+/* MOBILE TYPO */
+
+@media(max-width:768px){
+
+.hero{
+padding-left:20px;
+padding-right:20px;
+}
+
+.hero-h1{
+font-size:64px;
+}
+
+.sec-t{
+font-size:38px!important;
+}
+
+.det-name{
+font-size:30px;
+}
+
+.det-price{
+font-size:38px;
+}
+
+.pr-name{
+font-size:20px;
+}
+
+.pc-name{
+font-size:22px;
+}
+
+}
 </style>
 </head>
 <body>
-
+<div id="app">
 <!-- TOAST -->
 <div class="toast" id="toast"><span id="t-ico"></span><span id="t-msg"></span></div>
 
