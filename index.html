@@ -1,8 +1,9 @@
+cat > /mnt/user-data/outputs/strata-vases.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>STRATA — Vases Artisanaux Imprimés en 3D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -25,6 +26,7 @@
   --font-display: 'Cormorant Garamond', serif;
   --font-body: 'DM Sans', sans-serif;
   --transition: cubic-bezier(0.76, 0, 0.24, 1);
+  --nav-h: 70px;
 }
 
 /* ===== RESET ===== */
@@ -38,44 +40,47 @@ body {
   overflow-x: hidden;
   cursor: none;
 }
+@media (max-width: 768px) { body { cursor: auto; } }
 a { text-decoration: none; color: inherit; }
 button { cursor: none; border: none; background: none; font-family: var(--font-body); }
+@media (max-width: 768px) { button { cursor: pointer; } }
 input, select, textarea { font-family: var(--font-body); }
 
-/* ===== CUSTOM CURSOR ===== */
-#cursor {
+/* ===== CUSTOM CURSOR (desktop only) ===== */
+#cursor, #cursor-ring {
   position: fixed;
-  width: 8px; height: 8px;
-  background: var(--gold);
-  border-radius: 50%;
   pointer-events: none;
   z-index: 99999;
   transform: translate(-50%,-50%);
+}
+#cursor {
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
   transition: width .3s var(--transition), height .3s var(--transition), background .3s;
-  mix-blend-mode: normal;
+  z-index: 99999;
 }
 #cursor-ring {
-  position: fixed;
   width: 36px; height: 36px;
   border: 1px solid rgba(201,169,110,0.5);
   border-radius: 50%;
-  pointer-events: none;
   z-index: 99998;
-  transform: translate(-50%,-50%);
   transition: all .15s ease;
 }
-body:has(a:hover) #cursor, body:has(button:hover) #cursor { width: 14px; height: 14px; background: var(--gold-light); }
-body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring { width: 52px; height: 52px; border-color: var(--gold); }
+body:has(a:hover) #cursor,
+body:has(button:hover) #cursor { width: 14px; height: 14px; background: var(--gold-light); }
+body:has(a:hover) #cursor-ring,
+body:has(button:hover) #cursor-ring { width: 52px; height: 52px; border-color: var(--gold); }
+@media (max-width: 768px) { #cursor, #cursor-ring { display: none; } }
 
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--dark); }
 ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
 
-/* ===== INTRO OVERLAY ===== */
+/* ===== INTRO ===== */
 #intro {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: var(--black);
   z-index: 9999;
   display: flex;
@@ -85,19 +90,15 @@ body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring { width: 52p
   overflow: hidden;
 }
 #intro-canvas { position: absolute; inset: 0; }
-#intro-brand {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-}
+#intro-brand { position: relative; z-index: 2; text-align: center; padding: 0 1rem; }
 #intro-letters {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 7rem);
+  font-size: clamp(2.5rem, 10vw, 7rem);
   font-weight: 300;
-  letter-spacing: .4em;
+  letter-spacing: .35em;
   color: var(--gold);
-  display: flex;
-  gap: 0;
+  display: flex; gap: 0;
+  justify-content: center;
 }
 #intro-letters span {
   opacity: 0;
@@ -106,9 +107,8 @@ body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring { width: 52p
   transition: opacity .4s ease, transform .4s ease;
 }
 #intro-tagline {
-  font-family: var(--font-body);
-  font-size: .75rem;
-  letter-spacing: .35em;
+  font-size: clamp(.6rem, 2vw, .75rem);
+  letter-spacing: .3em;
   text-transform: uppercase;
   color: var(--text-dim);
   margin-top: 1rem;
@@ -116,17 +116,12 @@ body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring { width: 52p
   transition: opacity .8s ease;
 }
 #intro-line {
-  width: 0;
-  height: 1px;
+  width: 0; height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold), transparent);
   margin: 1.2rem auto;
   transition: width 1s var(--transition);
 }
-#intro.fade-out {
-  opacity: 0;
-  transition: opacity .8s ease;
-  pointer-events: none;
-}
+#intro.fade-out { opacity: 0; transition: opacity .8s ease; pointer-events: none; }
 
 /* ===== MAIN WRAPPER ===== */
 #main-wrapper { opacity: 0; transition: opacity .8s ease; }
@@ -137,16 +132,16 @@ nav {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  padding: 1.4rem 4rem;
+  height: var(--nav-h);
+  padding: 0 4rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: background .4s, padding .4s;
+  transition: background .4s;
 }
 nav.scrolled {
-  background: rgba(10,9,7,0.92);
+  background: rgba(10,9,7,0.94);
   backdrop-filter: blur(20px);
-  padding: 1rem 4rem;
   border-bottom: 1px solid var(--glass-border);
 }
 .nav-logo {
@@ -175,39 +170,92 @@ nav.scrolled {
 }
 .nav-links a:hover { color: var(--gold); }
 .nav-links a:hover::after { width: 100%; }
-.nav-cart {
-  position: relative;
+.nav-right { display: flex; gap: .8rem; align-items: center; }
+.nav-cart, .nav-user {
   width: 40px; height: 40px;
   border: 1px solid var(--glass-border);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   transition: border-color .3s, background .3s;
+  position: relative;
+  color: var(--text-dim);
 }
-.nav-cart:hover { border-color: var(--gold); background: var(--glass); }
+.nav-cart:hover, .nav-user:hover { border-color: var(--gold); background: var(--glass); color: var(--gold); }
 .cart-count {
   position: absolute;
   top: -5px; right: -5px;
-  background: var(--gold);
-  color: var(--black);
-  font-size: .6rem;
-  font-weight: 500;
+  background: var(--gold); color: var(--black);
+  font-size: .6rem; font-weight: 500;
   width: 18px; height: 18px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  opacity: 0;
-  transition: opacity .3s;
+  opacity: 0; transition: opacity .3s;
 }
 .cart-count.visible { opacity: 1; }
-.nav-user {
-  width: 40px; height: 40px;
-  border: 1px solid var(--glass-border);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: border-color .3s, background .3s;
+
+/* Hamburger */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px; height: 36px;
+  padding: 4px;
+  cursor: pointer;
 }
-.nav-user:hover { border-color: var(--gold); background: var(--glass); }
+.nav-hamburger span {
+  display: block;
+  height: 1px;
+  background: var(--gold);
+  transition: all .4s var(--transition);
+  transform-origin: center;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* Mobile menu overlay */
+#mobile-menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,9,7,0.98);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease;
+}
+#mobile-menu.open { opacity: 1; pointer-events: all; }
+.mobile-nav-link {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 300;
+  color: var(--cream);
+  letter-spacing: .05em;
+  transition: color .3s;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .4s ease, transform .4s ease, color .3s;
+}
+#mobile-menu.open .mobile-nav-link { opacity: 1; transform: translateY(0); }
+#mobile-menu.open .mobile-nav-link:nth-child(1) { transition-delay: .1s; }
+#mobile-menu.open .mobile-nav-link:nth-child(2) { transition-delay: .2s; }
+#mobile-menu.open .mobile-nav-link:nth-child(3) { transition-delay: .3s; }
+#mobile-menu.open .mobile-nav-link:nth-child(4) { transition-delay: .4s; }
+#mobile-menu.open .mobile-nav-link:nth-child(5) { transition-delay: .5s; }
+.mobile-nav-link:hover { color: var(--gold); }
+.mobile-menu-footer {
+  position: absolute;
+  bottom: 3rem;
+  font-size: .65rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
 
 /* ===== SECTIONS ===== */
 section { display: none; }
@@ -222,11 +270,8 @@ section.active { display: block; }
   align-items: center;
   overflow: hidden;
 }
-#hero-canvas {
-  position: absolute;
-  inset: 0;
-  opacity: .4;
-}
+#section-home.active { display: flex; }
+#hero-canvas { position: absolute; inset: 0; opacity: .4; }
 .hero-content {
   position: relative;
   z-index: 2;
@@ -244,16 +289,13 @@ section.active { display: block; }
 }
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 7vw, 6.5rem);
+  font-size: clamp(2.8rem, 7vw, 6.5rem);
   font-weight: 300;
   line-height: 1.05;
   color: var(--cream);
   margin-bottom: 1.5rem;
 }
-.hero-title .word {
-  display: inline-block;
-  overflow: hidden;
-}
+.hero-title .word { display: inline-block; overflow: hidden; }
 .hero-title .word span {
   display: inline-block;
   transform: translateY(110%);
@@ -264,7 +306,7 @@ section.active { display: block; }
 .hero-title .word:nth-child(4) span { animation-delay: .45s; }
 .hero-title .italic { font-style: italic; color: var(--gold); }
 .hero-sub {
-  font-size: 1rem;
+  font-size: clamp(.85rem, 2vw, 1rem);
   color: var(--text-dim);
   max-width: 500px;
   margin-bottom: 3rem;
@@ -276,8 +318,7 @@ section.active { display: block; }
 }
 .typewriter-cursor {
   display: inline-block;
-  width: 1px;
-  height: 1em;
+  width: 1px; height: 1em;
   background: var(--gold);
   margin-left: 2px;
   animation: blink 1s step-end infinite;
@@ -301,8 +342,7 @@ section.active { display: block; }
 }
 .btn-cta::before {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: var(--gold);
   transform: translateX(-101%);
   transition: transform .5s var(--transition);
@@ -312,44 +352,38 @@ section.active { display: block; }
 .btn-cta span, .btn-cta svg { position: relative; z-index: 1; }
 .hero-scroll-indicator {
   position: absolute;
-  bottom: 3rem;
-  left: 50%;
+  bottom: 3rem; left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: .5rem;
-  opacity: .5;
+  opacity: 0;
   animation: fadeUp .8s 1.5s forwards;
 }
 .scroll-line {
-  width: 1px;
-  height: 50px;
+  width: 1px; height: 50px;
   background: linear-gradient(var(--gold), transparent);
   animation: scrollPulse 2s ease-in-out infinite;
 }
 .hero-floating-badge {
   position: absolute;
-  right: 6rem;
-  top: 50%;
+  right: 6rem; top: 50%;
   transform: translateY(-50%);
   width: 130px; height: 130px;
   border: 1px solid var(--glass-border);
   border-radius: 50%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   background: var(--glass);
   backdrop-filter: blur(10px);
-  animation: rotateBadge 20s linear infinite;
   opacity: 0;
   animation: rotateBadge 20s linear infinite, fadeIn 1s 1.5s forwards;
 }
 .hero-floating-badge .badge-text {
   font-family: var(--font-display);
-  font-size: 1.8rem;
-  color: var(--gold);
+  font-size: 1.8rem; color: var(--gold);
 }
 .hero-floating-badge .badge-sub {
   font-size: .58rem;
@@ -358,15 +392,43 @@ section.active { display: block; }
   color: var(--text-dim);
 }
 
-/* ===== ABOUT ===== */
-#section-about {
-  min-height: 100vh;
-  padding: 8rem 4rem;
+/* Home philosophy strip */
+.home-philosophy {
+  padding: 7rem 4rem;
+  background: var(--dark);
 }
-.section-header {
+.home-philosophy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 4rem auto 0;
+}
+.philosophy-card {
   text-align: center;
-  margin-bottom: 6rem;
+  padding: 2.5rem 1.5rem;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  transition: border-color .3s, transform .4s var(--transition);
 }
+.philosophy-card:hover { border-color: var(--gold-dark); transform: translateY(-4px); }
+.philosophy-num {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  color: var(--gold);
+  margin-bottom: .5rem;
+}
+.philosophy-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--cream);
+  margin-bottom: .8rem;
+}
+.philosophy-card p { font-size: .82rem; color: var(--text-dim); line-height: 1.7; }
+
+/* ===== ABOUT ===== */
+#section-about { padding: 8rem 4rem; }
+.section-header { text-align: center; margin-bottom: 6rem; }
 .section-eyebrow {
   font-size: .68rem;
   letter-spacing: .4em;
@@ -377,7 +439,7 @@ section.active { display: block; }
 }
 .section-title {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2rem, 5vw, 4rem);
   font-weight: 300;
   color: var(--cream);
   line-height: 1.1;
@@ -391,32 +453,38 @@ section.active { display: block; }
   margin-bottom: 7rem;
 }
 .about-vase-visual {
-  position: relative;
   height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
 }
 .about-vase-svg { animation: floatVase 6s ease-in-out infinite; }
 .about-text h3 {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: clamp(1.6rem, 3vw, 2rem);
   font-weight: 300;
   color: var(--cream);
   margin-bottom: 1.5rem;
   line-height: 1.2;
 }
 .about-text h3 em { font-style: italic; color: var(--gold); }
-.about-text p {
-  color: var(--text-dim);
-  line-height: 1.9;
-  margin-bottom: 1.2rem;
-  font-size: .95rem;
+.about-text p { color: var(--text-dim); line-height: 1.9; margin-bottom: 1.2rem; font-size: .95rem; }
+.about-quote {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
 }
+.about-quote p {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.5;
+  margin-bottom: .8rem;
+}
+.about-quote cite { font-size: .75rem; color: var(--gold); letter-spacing: .1em; }
 .about-process {
   background: var(--dark2);
   border: 1px solid var(--glass-border);
-  border-radius: 2px;
   padding: 4rem;
   margin-bottom: 5rem;
 }
@@ -433,10 +501,7 @@ section.active { display: block; }
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
 }
-.process-step {
-  text-align: center;
-  position: relative;
-}
+.process-step { text-align: center; position: relative; }
 .process-step:not(:last-child)::after {
   content: '';
   position: absolute;
@@ -449,16 +514,12 @@ section.active { display: block; }
   margin: 0 auto 1rem;
   border: 1px solid var(--gold-dark);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
 }
 .process-icon::before {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: var(--gold);
   transform: scaleY(0);
   transform-origin: bottom;
@@ -466,13 +527,7 @@ section.active { display: block; }
 }
 .process-step:hover .process-icon::before { transform: scaleY(1); }
 .process-icon svg { position: relative; z-index: 1; }
-.process-step h4 {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 400;
-  color: var(--cream2);
-  margin-bottom: .4rem;
-}
+.process-step h4 { font-family: var(--font-display); font-size: 1rem; color: var(--cream2); margin-bottom: .4rem; }
 .process-step p { font-size: .78rem; color: var(--text-dim); line-height: 1.5; }
 .stats-grid {
   display: grid;
@@ -481,11 +536,7 @@ section.active { display: block; }
   background: var(--glass-border);
   border: 1px solid var(--glass-border);
 }
-.stat-item {
-  background: var(--dark);
-  padding: 3rem 2rem;
-  text-align: center;
-}
+.stat-item { background: var(--dark); padding: 3rem 2rem; text-align: center; }
 .stat-number {
   font-family: var(--font-display);
   font-size: 3rem;
@@ -497,10 +548,7 @@ section.active { display: block; }
 .stat-label { font-size: .72rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text-dim); }
 
 /* ===== CATALOGUE ===== */
-#section-catalogue {
-  padding: 8rem 4rem;
-  min-height: 100vh;
-}
+#section-catalogue { padding: 8rem 4rem; }
 .filter-bar {
   display: flex;
   gap: 1rem;
@@ -533,7 +581,6 @@ section.active { display: block; }
   overflow: hidden;
   position: relative;
   transition: transform .5s var(--transition), box-shadow .5s;
-  cursor: none;
 }
 .product-card:hover {
   transform: translateY(-8px);
@@ -542,7 +589,7 @@ section.active { display: block; }
 .product-badge {
   position: absolute;
   top: 1rem; left: 1rem;
-  z-index: 2;
+  z-index: 3;
   padding: .3rem .8rem;
   font-size: .6rem;
   letter-spacing: .15em;
@@ -552,28 +599,49 @@ section.active { display: block; }
 .badge-new { background: var(--gold); color: var(--black); }
 .badge-best { background: var(--copper); color: var(--black); }
 .badge-limited { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
-.product-visual {
-  height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+/* ===== PRODUCT IMAGE ZONE ===== */
+.product-img-zone {
+  width: 100%;
+  height: 260px;
   position: relative;
   overflow: hidden;
+  background: var(--dark2);
+  display: block;
 }
-.product-visual::before {
-  content: '';
+.product-img-zone img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform .6s var(--transition);
+}
+.product-card:hover .product-img-zone img { transform: scale(1.06); }
+/* Placeholder shown when src is empty/missing */
+.product-img-zone .img-placeholder {
   position: absolute;
   inset: 0;
-  opacity: .15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .8rem;
+  border: 1px dashed rgba(201,169,110,0.2);
+  color: var(--text-dim);
 }
-.product-visual svg {
-  position: relative;
-  z-index: 1;
-  transition: transform .6s var(--transition);
-  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+.product-img-zone .img-placeholder svg { opacity: .3; }
+.product-img-zone .img-placeholder span {
+  font-size: .65rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  opacity: .5;
 }
-.product-card:hover .product-visual svg { transform: scale(1.08) translateY(-5px); }
-.product-info { padding: 1.5rem; }
+/* Hide placeholder when real img loads */
+.product-img-zone img.loaded ~ .img-placeholder,
+.product-img-zone img[src]:not([src=""]) ~ .img-placeholder { display: none; }
+
+.product-info { padding: 1.4rem; }
 .product-name {
   font-family: var(--font-display);
   font-size: 1.3rem;
@@ -582,12 +650,13 @@ section.active { display: block; }
   margin-bottom: .3rem;
 }
 .product-desc { font-size: .78rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 1.2rem; }
-.product-meta { display: flex; justify-content: space-between; align-items: center; }
+.product-meta { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
 .product-price {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 300;
   color: var(--gold);
+  flex-shrink: 0;
 }
 .btn-add {
   padding: .6rem 1.3rem;
@@ -599,11 +668,11 @@ section.active { display: block; }
   position: relative;
   overflow: hidden;
   transition: color .4s;
+  flex-shrink: 0;
 }
 .btn-add::before {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: var(--gold);
   transform: translateY(101%);
   transition: transform .4s var(--transition);
@@ -620,43 +689,32 @@ section.active { display: block; }
   background: var(--dark);
   border-left: 1px solid var(--glass-border);
   z-index: 2000;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
   transition: right .6s var(--transition);
   overflow: hidden;
 }
 #cart-sidebar.open { right: 0; }
 #cart-overlay {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(0,0,0,0.6);
   z-index: 1999;
-  opacity: 0;
-  pointer-events: none;
+  opacity: 0; pointer-events: none;
   transition: opacity .4s;
   backdrop-filter: blur(4px);
 }
 #cart-overlay.active { opacity: 1; pointer-events: all; }
 .cart-header {
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--glass-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
 }
-.cart-header h2 {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 300;
-  color: var(--cream);
-}
+.cart-header h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 300; color: var(--cream); }
 .cart-close {
   width: 36px; height: 36px;
   border: 1px solid var(--glass-border);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   color: var(--text-dim);
   transition: all .3s;
 }
@@ -674,26 +732,21 @@ section.active { display: block; }
   width: 70px; height: 70px;
   background: var(--dark2);
   border: 1px solid var(--glass-border);
+  overflow: hidden;
+}
+.cart-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.cart-item-thumb .thumb-placeholder {
+  width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
 }
-.cart-item-name {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  color: var(--cream);
-  margin-bottom: .2rem;
-}
+.cart-item-name { font-family: var(--font-display); font-size: 1rem; color: var(--cream); margin-bottom: .2rem; }
 .cart-item-price { font-size: .85rem; color: var(--gold); }
-.cart-qty {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  margin-top: .5rem;
-}
+.cart-qty { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; }
 .qty-btn {
-  width: 24px; height: 24px;
+  width: 28px; height: 28px;
   border: 1px solid var(--glass-border);
   color: var(--text-dim);
-  font-size: .9rem;
+  font-size: 1rem;
   display: flex; align-items: center; justify-content: center;
   transition: all .2s;
 }
@@ -701,23 +754,10 @@ section.active { display: block; }
 .qty-val { font-size: .85rem; min-width: 20px; text-align: center; }
 .cart-item-remove { color: var(--text-dim); transition: color .3s; font-size: .7rem; letter-spacing: .1em; }
 .cart-item-remove:hover { color: #e07070; }
-.cart-footer {
-  padding: 2rem;
-  border-top: 1px solid var(--glass-border);
-}
-.cart-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
+.cart-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--glass-border); flex-shrink: 0; }
+.cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .cart-total span:first-child { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-dim); }
-.cart-total-price {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 300;
-  color: var(--gold);
-}
+.cart-total-price { font-family: var(--font-display); font-size: 2rem; font-weight: 300; color: var(--gold); }
 .btn-checkout {
   width: 100%;
   padding: 1.2rem;
@@ -727,36 +767,27 @@ section.active { display: block; }
   letter-spacing: .3em;
   text-transform: uppercase;
   font-weight: 500;
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
   transition: all .4s;
 }
 .btn-checkout::before {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: var(--cream);
   transform: translateX(-101%);
   transition: transform .4s var(--transition);
 }
 .btn-checkout:hover::before { transform: translateX(0); }
 .btn-checkout span { position: relative; z-index: 1; }
-.cart-empty {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: var(--text-dim);
-}
+.cart-empty { text-align: center; padding: 4rem 2rem; color: var(--text-dim); }
 .cart-empty-icon { margin-bottom: 1.5rem; opacity: .3; }
 .cart-empty h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--cream); margin-bottom: .5rem; }
 
 /* ===== CHECKOUT ===== */
-#section-checkout {
-  min-height: 100vh;
-  padding: 8rem 4rem;
-}
+#section-checkout { padding: 8rem 4rem; }
 .checkout-grid {
   display: grid;
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: 1fr 400px;
   gap: 4rem;
   max-width: 1200px;
   margin: 0 auto;
@@ -789,6 +820,7 @@ section.active { display: block; }
   font-size: .9rem;
   outline: none;
   transition: border-color .3s;
+  -webkit-appearance: none;
 }
 .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
 .form-group input::placeholder { color: var(--text-dim); }
@@ -797,9 +829,7 @@ section.active { display: block; }
   border: 1px solid var(--glass-border);
   padding: 1.5rem;
   margin-top: 2rem;
-  border-radius: 2px;
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
 }
 .card-input-wrapper::before {
   content: '';
@@ -809,17 +839,11 @@ section.active { display: block; }
   background: linear-gradient(var(--gold), var(--copper));
 }
 .card-chips { display: flex; gap: .5rem; margin-bottom: 1rem; }
-.card-chip {
-  padding: .2rem .6rem;
-  border: 1px solid var(--glass-border);
-  font-size: .6rem;
-  letter-spacing: .1em;
-  color: var(--text-dim);
-}
+.card-chip { padding: .2rem .6rem; border: 1px solid var(--glass-border); font-size: .6rem; letter-spacing: .1em; color: var(--text-dim); }
 .card-number-display {
   font-family: var(--font-display);
-  font-size: 1.4rem;
-  letter-spacing: .3em;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  letter-spacing: .25em;
   color: var(--cream);
   margin-bottom: .8rem;
 }
@@ -829,37 +853,12 @@ section.active { display: block; }
   padding: 2rem;
   height: fit-content;
   position: sticky;
-  top: 100px;
+  top: calc(var(--nav-h) + 1rem);
 }
-.checkout-summary h3 {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  font-weight: 300;
-  color: var(--cream);
-  margin-bottom: 1.5rem;
-  padding-bottom: .8rem;
-  border-bottom: 1px solid var(--glass-border);
-}
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: .8rem;
-  font-size: .85rem;
-  color: var(--text-dim);
-}
-.summary-item.total {
-  padding-top: 1rem;
-  margin-top: .5rem;
-  border-top: 1px solid var(--glass-border);
-  color: var(--cream);
-  font-size: 1rem;
-}
-.summary-item.total .summary-price {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  color: var(--gold);
-}
+.checkout-summary h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 300; color: var(--cream); margin-bottom: 1.5rem; padding-bottom: .8rem; border-bottom: 1px solid var(--glass-border); }
+.summary-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: .8rem; font-size: .85rem; color: var(--text-dim); }
+.summary-item.total { padding-top: 1rem; margin-top: .5rem; border-top: 1px solid var(--glass-border); color: var(--cream); font-size: 1rem; }
+.summary-item.total .summary-price { font-family: var(--font-display); font-size: 1.5rem; color: var(--gold); }
 .btn-pay {
   width: 100%;
   padding: 1.3rem;
@@ -870,14 +869,10 @@ section.active { display: block; }
   text-transform: uppercase;
   font-weight: 500;
   margin-top: 1.5rem;
-  position: relative;
-  overflow: hidden;
-  transition: all .4s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .8rem;
+  display: flex; align-items: center; justify-content: center; gap: .8rem;
+  transition: opacity .3s;
 }
+.btn-pay:active { opacity: .8; }
 .pay-loader {
   width: 18px; height: 18px;
   border: 2px solid rgba(0,0,0,0.3);
@@ -888,42 +883,43 @@ section.active { display: block; }
 }
 .btn-pay.loading .pay-loader { display: block; }
 .btn-pay.loading .pay-text { display: none; }
+
+/* ===== CONFIRM ===== */
 .confirm-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
   z-index: 5000;
   display: none;
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   flex-direction: column;
   text-align: center;
+  padding: 2rem;
 }
 .confirm-overlay.active { display: flex; }
 .confirm-icon {
   width: 80px; height: 80px;
   border: 2px solid var(--gold);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   margin-bottom: 2rem;
   animation: confirmPop .5s var(--transition);
 }
-.confirm-title {
-  font-family: var(--font-display);
-  font-size: 2.5rem;
-  font-weight: 300;
-  color: var(--cream);
-  margin-bottom: .8rem;
+.confirm-title { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 300; color: var(--cream); margin-bottom: .8rem; }
+.confirm-sub { color: var(--text-dim); margin-bottom: 2rem; line-height: 1.6; }
+.btn-outline {
+  padding: .9rem 2.5rem;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: .72rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  transition: all .3s;
+  background: transparent;
 }
-.confirm-sub { color: var(--text-dim); margin-bottom: 2rem; }
+.btn-outline:hover { background: var(--gold); color: var(--black); }
 
 /* ===== PROFILE ===== */
-#section-profile {
-  min-height: 100vh;
-  padding: 8rem 4rem;
-}
+#section-profile { padding: 8rem 4rem; }
 .profile-grid {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -942,20 +938,12 @@ section.active { display: block; }
   background: linear-gradient(135deg, var(--gold-dark), var(--copper));
   border-radius: 50%;
   margin: 0 auto 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display);
   font-size: 2rem;
   color: var(--black);
 }
-.profile-name {
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  color: var(--cream);
-  margin-bottom: .2rem;
-}
+.profile-name { text-align: center; font-family: var(--font-display); font-size: 1.2rem; color: var(--cream); margin-bottom: .2rem; }
 .profile-email { text-align: center; font-size: .75rem; color: var(--text-dim); margin-bottom: 2rem; }
 .profile-tabs { border-top: 1px solid var(--glass-border); }
 .profile-tab {
@@ -967,9 +955,7 @@ section.active { display: block; }
   text-transform: uppercase;
   color: var(--text-dim);
   border-bottom: 1px solid var(--glass-border);
-  display: flex;
-  align-items: center;
-  gap: .8rem;
+  display: flex; align-items: center; gap: .8rem;
   transition: color .3s;
   position: relative;
 }
@@ -997,19 +983,13 @@ section.active { display: block; }
   align-items: center;
   gap: 1rem;
 }
-.order-ref { font-size: .7rem; letter-spacing: .2em; color: var(--text-dim); text-transform: uppercase; }
+.order-ref { font-size: .7rem; letter-spacing: .2em; color: var(--text-dim); text-transform: uppercase; margin-bottom: .2rem; }
 .order-name { font-family: var(--font-display); font-size: 1.1rem; color: var(--cream); }
 .order-date { font-size: .8rem; color: var(--text-dim); }
-.order-status {
-  padding: .3rem .8rem;
-  font-size: .6rem;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-}
+.order-status { padding: .3rem .8rem; font-size: .6rem; letter-spacing: .15em; text-transform: uppercase; }
 .status-delivered { background: rgba(100,200,100,0.1); color: #78c878; border: 1px solid rgba(100,200,100,0.3); }
 .status-shipped { background: rgba(201,169,110,0.1); color: var(--gold); border: 1px solid rgba(201,169,110,0.3); }
-.order-total { font-family: var(--font-display); font-size: 1.2rem; color: var(--gold); }
-.tracking-timeline { padding: 2rem 0; }
+.order-total { font-family: var(--font-display); font-size: 1.2rem; color: var(--gold); margin-top: .4rem; }
 .tracking-header {
   background: var(--dark2);
   border: 1px solid var(--glass-border);
@@ -1018,39 +998,30 @@ section.active { display: block; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 .tracking-ref { font-family: var(--font-display); font-size: 1.1rem; color: var(--cream); }
-.timeline {
-  position: relative;
-  padding-left: 3rem;
-}
+.timeline { position: relative; padding-left: 3rem; }
 .timeline::before {
   content: '';
   position: absolute;
-  left: 1rem;
-  top: 0; bottom: 0;
-  width: 1px;
-  background: var(--glass-border);
+  left: 1rem; top: 0; bottom: 0;
+  width: 1px; background: var(--glass-border);
 }
 .timeline-item { position: relative; margin-bottom: 2.5rem; }
 .timeline-dot {
   position: absolute;
-  left: -2.65rem;
-  top: 4px;
+  left: -2.65rem; top: 4px;
   width: 18px; height: 18px;
   border-radius: 50%;
   border: 1px solid var(--glass-border);
   background: var(--dark);
   display: flex; align-items: center; justify-content: center;
-  transition: all .5s;
 }
-.timeline-dot.done {
-  border-color: var(--gold);
-  background: var(--gold);
-}
+.timeline-dot.done { border-color: var(--gold); background: var(--gold); }
 .timeline-dot.active {
-  border-color: var(--gold);
-  background: transparent;
+  border-color: var(--gold); background: transparent;
   box-shadow: 0 0 0 4px rgba(201,169,110,0.15);
   animation: pulseDot 2s ease-in-out infinite;
 }
@@ -1059,16 +1030,9 @@ section.active { display: block; }
 .timeline-desc { font-size: .82rem; color: var(--text-dim); margin-top: .3rem; }
 
 /* ===== FAQ ===== */
-#section-faq {
-  padding: 8rem 4rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
+#section-faq { padding: 8rem 4rem; max-width: 900px; margin: 0 auto; }
 .faq-list { margin-top: 3rem; }
-.faq-item {
-  border-bottom: 1px solid var(--glass-border);
-  overflow: hidden;
-}
+.faq-item { border-bottom: 1px solid var(--glass-border); overflow: hidden; }
 .faq-question {
   width: 100%;
   padding: 1.6rem 0;
@@ -1076,41 +1040,28 @@ section.active { display: block; }
   justify-content: space-between;
   align-items: center;
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: clamp(.95rem, 2.5vw, 1.1rem);
   font-weight: 400;
   color: var(--cream);
   text-align: left;
+  gap: 1rem;
   transition: color .3s;
 }
 .faq-question:hover { color: var(--gold); }
 .faq-icon {
-  width: 28px; height: 28px;
+  width: 28px; height: 28px; flex-shrink: 0;
   border: 1px solid var(--glass-border);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
   transition: all .4s var(--transition);
   color: var(--gold);
 }
 .faq-item.open .faq-icon { transform: rotate(45deg); border-color: var(--gold); background: var(--gold); color: var(--black); }
-.faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .5s var(--transition);
-}
-.faq-answer-inner {
-  padding: 0 0 1.5rem;
-  color: var(--text-dim);
-  font-size: .9rem;
-  line-height: 1.8;
-}
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height .5s var(--transition); }
+.faq-answer-inner { padding: 0 0 1.5rem; color: var(--text-dim); font-size: .9rem; line-height: 1.8; }
 
 /* ===== FOOTER ===== */
-footer {
-  background: var(--dark);
-  border-top: 1px solid var(--glass-border);
-  padding: 5rem 4rem 2rem;
-}
+footer { background: var(--dark); border-top: 1px solid var(--glass-border); padding: 5rem 4rem 2rem; }
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -1129,188 +1080,162 @@ footer {
   transition: all .3s;
 }
 .social-link:hover { border-color: var(--gold); color: var(--gold); }
-.footer-col h4 {
-  font-size: .65rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 1.2rem;
-}
-.footer-col a {
-  display: block;
-  font-size: .82rem;
-  color: var(--text-dim);
-  margin-bottom: .6rem;
-  transition: color .3s;
-}
+.footer-col h4 { font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+.footer-col a { display: block; font-size: .82rem; color: var(--text-dim); margin-bottom: .6rem; transition: color .3s; }
 .footer-col a:hover { color: var(--cream); }
-.newsletter-input {
-  display: flex;
-  border: 1px solid var(--glass-border);
-  overflow: hidden;
-  transition: border-color .3s;
-}
+.newsletter-input { display: flex; border: 1px solid var(--glass-border); overflow: hidden; transition: border-color .3s; }
 .newsletter-input:focus-within { border-color: var(--gold); }
-.newsletter-input input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  padding: .8rem 1rem;
-  color: var(--text);
-  font-size: .82rem;
-  outline: none;
-}
+.newsletter-input input { flex: 1; background: transparent; border: none; padding: .8rem 1rem; color: var(--text); font-size: .82rem; outline: none; min-width: 0; }
 .newsletter-input input::placeholder { color: var(--text-dim); }
-.newsletter-btn {
-  padding: .8rem 1rem;
-  background: var(--gold);
-  color: var(--black);
-  font-size: .7rem;
-  letter-spacing: .1em;
-  font-weight: 500;
-  transition: background .3s;
-}
+.newsletter-btn { padding: .8rem 1rem; background: var(--gold); color: var(--black); font-size: .7rem; letter-spacing: .1em; font-weight: 500; flex-shrink: 0; transition: background .3s; }
 .newsletter-btn:hover { background: var(--gold-light); }
-.footer-bottom {
-  border-top: 1px solid var(--glass-border);
-  padding-top: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+.footer-bottom { border-top: 1px solid var(--glass-border); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
 .footer-bottom p { font-size: .72rem; color: var(--text-dim); }
-.footer-legal { display: flex; gap: 1.5rem; }
+.footer-legal { display: flex; gap: 1.5rem; flex-wrap: wrap; }
 .footer-legal a { font-size: .72rem; color: var(--text-dim); transition: color .3s; }
 .footer-legal a:hover { color: var(--cream); }
 
 /* ===== ANIMATIONS ===== */
-@keyframes fadeUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
-@keyframes slideUp {
-  to { transform: translateY(0); }
-}
-@keyframes blink {
-  50% { opacity: 0; }
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-@keyframes scrollPulse {
-  0%, 100% { opacity: .5; transform: scaleY(1); }
-  50% { opacity: 1; transform: scaleY(1.3); }
-}
-@keyframes floatVase {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
-}
-@keyframes rotateBadge {
-  to { transform: translateY(-50%) rotate(360deg); }
-}
-@keyframes pulseDot {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(201,169,110,0.15); }
-  50% { box-shadow: 0 0 0 8px rgba(201,169,110,0.1); }
-}
-@keyframes confirmPop {
-  0% { transform: scale(0); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-@keyframes drawCheck {
-  to { stroke-dashoffset: 0; }
-}
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { to { opacity: 1; } }
+@keyframes slideUp { to { transform: translateY(0); } }
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes scrollPulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+@keyframes floatVase { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-15px); } }
+@keyframes rotateBadge { to { transform:translateY(-50%) rotate(360deg); } }
+@keyframes pulseDot { 0%,100% { box-shadow:0 0 0 4px rgba(201,169,110,0.15); } 50% { box-shadow:0 0 0 8px rgba(201,169,110,0.08); } }
+@keyframes confirmPop { 0% { transform:scale(0); opacity:0; } 100% { transform:scale(1); opacity:1; } }
+@keyframes drawCheck { to { stroke-dashoffset: 0; } }
+@keyframes pageEnter { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.page-enter { animation: pageEnter .5s var(--transition) forwards; }
 
-/* Scroll animations */
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity .8s var(--transition), transform .8s var(--transition);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal-left {
-  opacity: 0;
-  transform: translateX(-40px);
-  transition: opacity .8s var(--transition), transform .8s var(--transition);
-}
-.reveal-left.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-.reveal-right {
-  opacity: 0;
-  transform: translateX(40px);
-  transition: opacity .8s var(--transition), transform .8s var(--transition);
-}
-.reveal-right.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-.reveal-delay-1 { transition-delay: .1s; }
-.reveal-delay-2 { transition-delay: .2s; }
-.reveal-delay-3 { transition-delay: .3s; }
-.reveal-delay-4 { transition-delay: .4s; }
+/* Scroll reveal */
+.reveal { opacity:0; transform:translateY(40px); transition:opacity .8s var(--transition), transform .8s var(--transition); }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-left { opacity:0; transform:translateX(-40px); transition:opacity .8s var(--transition), transform .8s var(--transition); }
+.reveal-left.visible { opacity:1; transform:translateX(0); }
+.reveal-right { opacity:0; transform:translateX(40px); transition:opacity .8s var(--transition), transform .8s var(--transition); }
+.reveal-right.visible { opacity:1; transform:translateX(0); }
+.reveal-delay-1 { transition-delay:.1s; }
+.reveal-delay-2 { transition-delay:.2s; }
+.reveal-delay-3 { transition-delay:.3s; }
+.reveal-delay-4 { transition-delay:.4s; }
 
-/* ===== PAGE TRANSITION ===== */
-.page-enter {
-  animation: pageEnter .5s var(--transition) forwards;
-}
-@keyframes pageEnter {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== SECTION LABELS ===== */
-.section-label {
-  writing-mode: vertical-rl;
-  position: fixed;
-  right: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: .6rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  opacity: .5;
-}
-
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE TABLET (≤1024px) ===== */
 @media (max-width: 1024px) {
-  .checkout-grid { grid-template-columns: 1fr; }
-  .about-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .profile-grid { grid-template-columns: 1fr; }
-  #cart-sidebar { width: 100%; right: -100%; }
-  .hero-floating-badge { display: none; }
+  nav { padding: 0 2rem; }
+  .nav-links { gap: 1.8rem; }
+  .hero-content { padding: 0 2.5rem; }
+  .home-philosophy { padding: 5rem 2.5rem; }
+  .home-philosophy-grid { grid-template-columns: 1fr 1fr; }
+  #section-about { padding: 6rem 2.5rem; }
+  .about-grid { gap: 3rem; }
+  .process-steps { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .process-step:not(:last-child)::after { display: none; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
-  .process-steps { grid-template-columns: 1fr 1fr; }
+  #section-catalogue { padding: 6rem 2.5rem; }
+  .about-process { padding: 2.5rem; }
+  .checkout-grid { grid-template-columns: 1fr; }
+  .checkout-summary { position: static; }
+  #section-checkout { padding: 6rem 2.5rem; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-sidebar { display: flex; flex-direction: column; }
+  .profile-avatar { width: 60px; height: 60px; font-size: 1.4rem; }
+  #section-profile { padding: 6rem 2.5rem; }
+  #section-faq { padding: 6rem 2.5rem; }
+  footer { padding: 4rem 2.5rem 2rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  #cart-sidebar { width: 420px; right: -420px; }
+  .hero-floating-badge { display: none; }
 }
+
+/* ===== RESPONSIVE MOBILE (≤768px) ===== */
 @media (max-width: 768px) {
-  nav { padding: 1rem 1.5rem; }
-  nav.scrolled { padding: .8rem 1.5rem; }
+  :root { --nav-h: 60px; }
+  nav { padding: 0 1.2rem; }
   .nav-links { display: none; }
-  .hero-content { padding: 0 1.5rem; }
-  #section-about, #section-catalogue, #section-faq, #section-checkout, #section-profile { padding: 6rem 1.5rem; }
-  footer { padding: 4rem 1.5rem 2rem; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .about-process { padding: 2rem 1.5rem; }
-  .process-step::after { display: none; }
+  .nav-hamburger { display: flex; }
+  .nav-user { display: none; }
+
+  /* Hero */
+  .hero-content { padding: 0 1.2rem; padding-top: 2rem; }
+  .hero-title { font-size: clamp(2.2rem, 9vw, 3.5rem); }
+  .hero-sub { font-size: .88rem; margin-bottom: 2rem; }
+  .btn-cta { padding: .9rem 1.8rem; font-size: .72rem; }
+  .hero-scroll-indicator { display: none; }
+
+  /* Philosophy */
+  .home-philosophy { padding: 4rem 1.2rem; }
+  .home-philosophy-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+  /* About */
+  #section-about { padding: 5rem 1.2rem; }
+  .section-header { margin-bottom: 3rem; }
+  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .about-vase-visual { height: 220px; }
+  .about-vase-svg { transform: scale(.75); }
+  .about-process { padding: 1.8rem 1.2rem; }
+  .process-steps { grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stat-item { padding: 2rem 1rem; }
+  .stat-number { font-size: 2.2rem; }
+
+  /* Catalogue */
+  #section-catalogue { padding: 5rem 1.2rem; }
+  .products-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .product-img-zone { height: 180px; }
+  .product-info { padding: 1rem; }
+  .product-name { font-size: 1.1rem; }
+  .product-desc { display: none; }
+  .product-price { font-size: 1.2rem; }
+  .btn-add { padding: .5rem .8rem; font-size: .6rem; }
+  .filter-bar { gap: .6rem; }
+  .filter-btn { padding: .5rem 1rem; font-size: .65rem; }
+
+  /* Cart sidebar full width on mobile */
+  #cart-sidebar { width: 100%; right: -100%; }
+
+  /* Checkout */
+  #section-checkout { padding: 5rem 1.2rem; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .card-number-display { font-size: 1rem; letter-spacing: .15em; }
+
+  /* Profile */
+  #section-profile { padding: 5rem 1.2rem; }
+  .profile-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .profile-sidebar { flex-direction: column; }
+  .profile-tabs { display: flex; flex-wrap: wrap; gap: 0; border-top: none; margin-top: 1rem; }
+  .profile-tab { width: auto; flex: 1; min-width: 100px; padding: .7rem .5rem; border: 1px solid var(--glass-border); border-bottom: none; font-size: .6rem; justify-content: center; text-align: center; }
+  .profile-tab::before { display: none; }
+  .profile-tab.active { border-color: var(--gold); color: var(--gold); background: var(--glass); }
+  .order-card { grid-template-columns: 1fr; gap: .5rem; }
+
+  /* FAQ */
+  #section-faq { padding: 5rem 1.2rem; max-width: 100%; }
+
+  /* Footer */
+  footer { padding: 3.5rem 1.2rem 1.5rem; }
+  .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .footer-legal { gap: 1rem; }
+}
+
+/* ===== VERY SMALL (≤400px) ===== */
+@media (max-width: 400px) {
+  .products-grid { grid-template-columns: 1fr; }
+  .product-img-zone { height: 240px; }
+  .product-desc { display: block; }
 }
 </style>
 </head>
 <body>
 
-<!-- CURSOR -->
+<!-- CURSOR (desktop) -->
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-<!-- ===== INTRO ===== -->
+<!-- INTRO -->
 <div id="intro">
   <canvas id="intro-canvas"></canvas>
   <div id="intro-brand">
@@ -1320,25 +1245,38 @@ footer {
   </div>
 </div>
 
-<!-- ===== MAIN WRAPPER ===== -->
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+  <a class="mobile-nav-link" href="#" onclick="closeMobileMenu();showSection('home')">Accueil</a>
+  <a class="mobile-nav-link" href="#" onclick="closeMobileMenu();showSection('about')">À Propos</a>
+  <a class="mobile-nav-link" href="#" onclick="closeMobileMenu();showSection('catalogue')">Collection</a>
+  <a class="mobile-nav-link" href="#" onclick="closeMobileMenu();showSection('faq')">FAQ</a>
+  <a class="mobile-nav-link" href="#" onclick="closeMobileMenu();showSection('profile')">Mon Compte</a>
+  <div class="mobile-menu-footer">STRATA © 2025</div>
+</div>
+
+<!-- MAIN -->
 <div id="main-wrapper">
 
-  <!-- NAVIGATION -->
+  <!-- NAV -->
   <nav id="navbar">
-    <div class="nav-logo">STRATA</div>
+    <div class="nav-logo" onclick="showSection('home')" style="cursor:pointer;">STRATA</div>
     <div class="nav-links">
       <a href="#" onclick="showSection('home')">Accueil</a>
       <a href="#" onclick="showSection('about')">À Propos</a>
       <a href="#" onclick="showSection('catalogue')">Collection</a>
       <a href="#" onclick="showSection('faq')">FAQ</a>
     </div>
-    <div style="display:flex;gap:.8rem;align-items:center;">
+    <div class="nav-right">
       <button class="nav-user" onclick="showSection('profile')" title="Mon compte">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       </button>
       <button class="nav-cart" id="cart-btn" onclick="toggleCart()" title="Panier">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         <span class="cart-count" id="cart-count">0</span>
+      </button>
+      <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
       </button>
     </div>
   </nav>
@@ -1349,9 +1287,9 @@ footer {
     <div class="hero-content">
       <p class="hero-eyebrow">Collection 2025 — Édition Limitée</p>
       <h1 class="hero-title">
-        <span class="word"><span>La</span></span>
-        <span class="word"><span>Matière</span></span>
-        <span class="word"><span>à</span></span>
+        <span class="word"><span>La</span></span>&nbsp;
+        <span class="word"><span>Matière</span></span>&nbsp;
+        <span class="word"><span>à</span></span>&nbsp;
         <span class="word italic"><span>l'État&nbsp;Pur</span></span>
       </h1>
       <p class="hero-sub">
@@ -1371,32 +1309,31 @@ footer {
       <span class="badge-sub">Artisanal</span>
     </div>
 
-    <!-- About preview in home -->
-    <div style="padding:8rem 4rem;background:var(--dark);">
-      <div style="text-align:center;margin-bottom:4rem;" class="reveal">
+    <!-- Philosophy strip -->
+    <div class="home-philosophy">
+      <div class="section-header reveal" style="margin-bottom:3rem;">
         <span class="section-eyebrow">Notre Philosophie</span>
-        <h2 class="section-title">Là où la <em>technologie</em><br>rencontre l'art</h2>
+        <h2 class="section-title">Là où la <em>technologie</em> rencontre l'art</h2>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;max-width:1000px;margin:0 auto;">
-        <div style="text-align:center;padding:2.5rem 1.5rem;border:1px solid var(--glass-border);background:var(--glass);" class="reveal reveal-delay-1">
-          <div style="font-family:var(--font-display);font-size:3rem;color:var(--gold);margin-bottom:.5rem;">01</div>
-          <h3 style="font-family:var(--font-display);font-size:1.1rem;color:var(--cream);margin-bottom:.8rem;">Concevoir</h3>
-          <p style="font-size:.82rem;color:var(--text-dim);line-height:1.7;">Chaque forme naît d'un dialogue entre l'algorithme et l'imaginaire de nos artisans.</p>
+      <div class="home-philosophy-grid">
+        <div class="philosophy-card reveal reveal-delay-1">
+          <div class="philosophy-num">01</div>
+          <h3>Concevoir</h3>
+          <p>Chaque forme naît d'un dialogue entre l'algorithme et l'imaginaire de nos artisans.</p>
         </div>
-        <div style="text-align:center;padding:2.5rem 1.5rem;border:1px solid var(--glass-border);background:var(--glass);" class="reveal reveal-delay-2">
-          <div style="font-family:var(--font-display);font-size:3rem;color:var(--gold);margin-bottom:.5rem;">02</div>
-          <h3 style="font-family:var(--font-display);font-size:1.1rem;color:var(--cream);margin-bottom:.8rem;">Stratifier</h3>
-          <p style="font-size:.82rem;color:var(--text-dim);line-height:1.7;">Couche par couche, une pièce unique émerge de notre imprimante de haute précision.</p>
+        <div class="philosophy-card reveal reveal-delay-2">
+          <div class="philosophy-num">02</div>
+          <h3>Stratifier</h3>
+          <p>Couche par couche, une pièce unique émerge de notre imprimante de haute précision.</p>
         </div>
-        <div style="text-align:center;padding:2.5rem 1.5rem;border:1px solid var(--glass-border);background:var(--glass);" class="reveal reveal-delay-3">
-          <div style="font-family:var(--font-display);font-size:3rem;color:var(--gold);margin-bottom:.5rem;">03</div>
-          <h3 style="font-family:var(--font-display);font-size:1.1rem;color:var(--cream);margin-bottom:.8rem;">Sublimer</h3>
-          <p style="font-size:.82rem;color:var(--text-dim);line-height:1.7;">Finitions à la main, patines naturelles, et contrôle qualité méticuleux.</p>
+        <div class="philosophy-card reveal reveal-delay-3">
+          <div class="philosophy-num">03</div>
+          <h3>Sublimer</h3>
+          <p>Finitions à la main, patines naturelles, et contrôle qualité méticuleux.</p>
         </div>
       </div>
     </div>
 
-    <!-- Footer in home section -->
     <footer>
       <div class="footer-grid">
         <div>
@@ -1404,7 +1341,7 @@ footer {
           <p class="footer-tagline">L'art de la matière en couches infinies. Chaque vase STRATA est une sculpture unique, née de la fusion entre technologie de pointe et savoir-faire artisanal.</p>
           <div class="footer-socials">
             <a href="#" class="social-link" title="Instagram">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/></svg>
             </a>
             <a href="#" class="social-link" title="Pinterest">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.236 2.636 7.855 6.356 9.312-.088-.791-.167-2.005.035-2.868.181-.78 1.172-4.97 1.172-4.97s-.299-.598-.299-1.482c0-1.388.806-2.428 1.808-2.428.853 0 1.267.641 1.267 1.408 0 .858-.546 2.14-.828 3.33-.236.995.499 1.806 1.476 1.806 1.771 0 3.135-1.867 3.135-4.56 0-2.384-1.714-4.052-4.16-4.052-2.833 0-4.495 2.124-4.495 4.32 0 .856.33 1.773.741 2.274a.3.3 0 01.069.285c-.076.313-.244.995-.277 1.134-.044.183-.146.222-.337.134-1.249-.581-2.03-2.407-2.03-3.874 0-3.154 2.292-6.052 6.608-6.052 3.469 0 6.165 2.473 6.165 5.776 0 3.447-2.173 6.22-5.19 6.22-1.013 0-1.966-.527-2.292-1.148l-.623 2.378c-.226.869-.835 1.958-1.244 2.621.937.29 1.931.446 2.962.446 5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
@@ -1441,7 +1378,7 @@ footer {
         <p>© 2025 STRATA. Tous droits réservés. Conçu et fabriqué en France.</p>
         <div class="footer-legal">
           <a href="#">Mentions légales</a>
-          <a href="#">Politique de confidentialité</a>
+          <a href="#">Confidentialité</a>
           <a href="#">CGV</a>
         </div>
       </div>
@@ -1450,115 +1387,92 @@ footer {
 
   <!-- ===== ABOUT ===== -->
   <section id="section-about">
-    <div style="padding:8rem 4rem;">
-      <div class="section-header reveal">
-        <span class="section-eyebrow">Notre Histoire</span>
-        <h2 class="section-title">La naissance de <em>STRATA</em></h2>
+    <div class="section-header reveal">
+      <span class="section-eyebrow">Notre Histoire</span>
+      <h2 class="section-title">La naissance de <em>STRATA</em></h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-vase-visual reveal-left">
+        <svg class="about-vase-svg" width="240" height="340" viewBox="0 0 260 360" fill="none">
+          <defs>
+            <linearGradient id="vaseGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#c9a96e"/>
+              <stop offset="50%" stop-color="#8a6c3a"/>
+              <stop offset="100%" stop-color="#3d2f18"/>
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="8" result="cb"/><feMerge><feMergeNode in="cb"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <g filter="url(#glow)">
+            <ellipse cx="130" cy="340" rx="55" ry="12" fill="url(#vaseGrad)" opacity=".3"/>
+            <path d="M75 340 Q60 280 65 220 Q68 180 80 160 Q100 130 110 100 Q120 75 125 40 L135 40 Q140 75 150 100 Q160 130 180 160 Q192 180 195 220 Q200 280 185 340 Z" fill="url(#vaseGrad)" opacity=".9"/>
+            <path d="M78 330 Q130 326 182 330" stroke="#c9a96e" stroke-width=".5" opacity=".3"/>
+            <path d="M76 318 Q130 314 184 318" stroke="#c9a96e" stroke-width=".5" opacity=".3"/>
+            <path d="M75 306 Q130 302 185 306" stroke="#c9a96e" stroke-width=".5" opacity=".3"/>
+            <path d="M74 294 Q130 290 186 294" stroke="#c9a96e" stroke-width=".5" opacity=".3"/>
+            <path d="M72 280 Q130 276 188 280" stroke="#c9a96e" stroke-width=".5" opacity=".4"/>
+            <path d="M70 265 Q130 261 190 265" stroke="#c9a96e" stroke-width=".5" opacity=".4"/>
+            <path d="M68 248 Q130 244 192 248" stroke="#c9a96e" stroke-width=".5" opacity=".4"/>
+            <path d="M67 230 Q130 226 193 230" stroke="#c9a96e" stroke-width=".5" opacity=".5"/>
+            <path d="M67 210 Q130 206 193 210" stroke="#c9a96e" stroke-width=".5" opacity=".5"/>
+            <path d="M69 190 Q130 186 191 190" stroke="#c9a96e" stroke-width=".5" opacity=".6"/>
+            <path d="M73 170 Q130 166 187 170" stroke="#c9a96e" stroke-width=".5" opacity=".6"/>
+            <path d="M80 152 Q130 148 180 152" stroke="#c9a96e" stroke-width=".5" opacity=".7"/>
+            <path d="M100 200 Q105 120 115 60" stroke="rgba(255,255,220,0.12)" stroke-width="8" stroke-linecap="round"/>
+          </g>
+          <ellipse cx="130" cy="40" rx="18" ry="6" fill="#c9a96e" opacity=".8"/>
+        </svg>
       </div>
-      <div class="about-grid">
-        <div class="about-vase-visual reveal-left">
-          <svg class="about-vase-svg" width="260" height="360" viewBox="0 0 260 360" fill="none">
-            <defs>
-              <linearGradient id="vaseGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#c9a96e"/>
-                <stop offset="50%" stop-color="#8a6c3a"/>
-                <stop offset="100%" stop-color="#3d2f18"/>
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
-                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-            <!-- Vase body layers -->
-            <g filter="url(#glow)">
-              <ellipse cx="130" cy="340" rx="55" ry="12" fill="url(#vaseGrad)" opacity=".4"/>
-              <path d="M75 340 Q60 280 65 220 Q68 180 80 160 Q100 130 110 100 Q120 75 125 40 L135 40 Q140 75 150 100 Q160 130 180 160 Q192 180 195 220 Q200 280 185 340 Z" fill="url(#vaseGrad)" opacity=".9"/>
-              <!-- Layer lines -->
-              <path d="M78 330 Q130 326 182 330" stroke="#c9a96e" stroke-width=".5" opacity=".3"/>
-              <path d="M76 318 Q130 314 184 318" stroke="#c9a96e" stroke-width=".5" opacity=".3"/>
-              <path d="M75 306 Q130 302 185 306" stroke="#c9a96e" stroke-width=".5" opacity=".3"/>
-              <path d="M74 294 Q130 290 186 294" stroke="#c9a96e" stroke-width=".5" opacity=".3"/>
-              <path d="M72 280 Q130 276 188 280" stroke="#c9a96e" stroke-width=".5" opacity=".4"/>
-              <path d="M70 265 Q130 261 190 265" stroke="#c9a96e" stroke-width=".5" opacity=".4"/>
-              <path d="M68 248 Q130 244 192 248" stroke="#c9a96e" stroke-width=".5" opacity=".4"/>
-              <path d="M67 230 Q130 226 193 230" stroke="#c9a96e" stroke-width=".5" opacity=".5"/>
-              <path d="M67 210 Q130 206 193 210" stroke="#c9a96e" stroke-width=".5" opacity=".5"/>
-              <path d="M69 190 Q130 186 191 190" stroke="#c9a96e" stroke-width=".5" opacity=".6"/>
-              <path d="M73 170 Q130 166 187 170" stroke="#c9a96e" stroke-width=".5" opacity=".6"/>
-              <path d="M80 152 Q130 148 180 152" stroke="#c9a96e" stroke-width=".5" opacity=".7"/>
-              <!-- Highlight -->
-              <path d="M100 200 Q105 120 115 60" stroke="rgba(255,255,220,0.15)" stroke-width="8" stroke-linecap="round"/>
-            </g>
-            <!-- Mouth -->
-            <ellipse cx="130" cy="40" rx="18" ry="6" fill="#c9a96e" opacity=".8"/>
-          </svg>
-        </div>
-        <div class="about-text reveal-right">
-          <h3>Né d'une <em>obsession</em> pour la beauté des couches</h3>
-          <p>En 2020, dans un atelier parisien baigné de lumière du Nord, Mia Vernet et Théo Kessler posent la première couche de ce qui deviendra STRATA. Ancienne sculptrice et ingénieur matériaux, ils partagent une même conviction : la technologie d'impression 3D mérite de sublimer, et non de standardiser.</p>
-          <p>Chaque vase STRATA naît d'un processus unique : un modèle 3D conçu à la main, imprimé en PLA biosourcé ou en résine technique, puis poncé, patinzé et fini par nos artisans. Jamais deux pièces identiques — c'est notre promesse.</p>
-          <p>Aujourd'hui, notre atelier expédie dans 32 pays, et chaque commande reste une pièce à part entière.</p>
-          <div style="margin-top:2rem;padding:1.5rem;border:1px solid var(--glass-border);background:var(--glass);">
-            <p style="font-family:var(--font-display);font-size:1.1rem;font-style:italic;color:var(--cream);line-height:1.5;">"L'impression 3D nous offre une liberté de forme inédite. Nous n'en exploitons qu'une infime partie — et c'est ce qui nous excite chaque matin."</p>
-            <p style="font-size:.75rem;color:var(--gold);letter-spacing:.1em;margin-top:.8rem;">— Mia Vernet, Co-fondatrice</p>
-          </div>
+      <div class="about-text reveal-right">
+        <h3>Né d'une <em>obsession</em> pour la beauté des couches</h3>
+        <p>En 2020, dans un atelier parisien baigné de lumière du Nord, Mia Vernet et Théo Kessler posent la première couche de ce qui deviendra STRATA. Ancienne sculptrice et ingénieur matériaux, ils partagent une même conviction : la technologie d'impression 3D mérite de sublimer, et non de standardiser.</p>
+        <p>Chaque vase STRATA naît d'un processus unique : un modèle 3D conçu à la main, imprimé en PLA biosourcé ou en résine technique, puis poncé, patiné et fini par nos artisans. Jamais deux pièces identiques — c'est notre promesse.</p>
+        <p>Aujourd'hui, notre atelier expédie dans 32 pays, et chaque commande reste une pièce à part entière.</p>
+        <div class="about-quote">
+          <p>"L'impression 3D nous offre une liberté de forme inédite. Nous n'en exploitons qu'une infime partie — et c'est ce qui nous excite chaque matin."</p>
+          <cite>— Mia Vernet, Co-fondatrice</cite>
         </div>
       </div>
+    </div>
 
-      <!-- Process -->
-      <div class="about-process reveal">
-        <h3 class="process-title">Notre Processus d'Impression</h3>
-        <div class="process-steps">
-          <div class="process-step">
-            <div class="process-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            </div>
-            <h4>Design 3D</h4>
-            <p>Modélisation paramétrique & révisions humaines</p>
+    <div class="about-process reveal">
+      <h3 class="process-title">Notre Processus d'Impression</h3>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="process-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </div>
-          <div class="process-step">
-            <div class="process-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-            </div>
-            <h4>Slicing</h4>
-            <p>Découpe numérique en couches de 0.1 mm</p>
+          <h4>Design 3D</h4>
+          <p>Modélisation paramétrique &amp; révisions humaines</p>
+        </div>
+        <div class="process-step">
+          <div class="process-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
           </div>
-          <div class="process-step">
-            <div class="process-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            </div>
-            <h4>Impression</h4>
-            <p>Dépôt couche par couche, 6 à 18h par pièce</p>
+          <h4>Slicing</h4>
+          <p>Découpe numérique en couches de 0.1 mm</p>
+        </div>
+        <div class="process-step">
+          <div class="process-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           </div>
-          <div class="process-step">
-            <div class="process-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            </div>
-            <h4>Finition</h4>
-            <p>Ponçage, patine & contrôle qualité artisanal</p>
+          <h4>Impression</h4>
+          <p>Dépôt couche par couche, 6 à 18h par pièce</p>
+        </div>
+        <div class="process-step">
+          <div class="process-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
           </div>
+          <h4>Finition</h4>
+          <p>Ponçage, patine &amp; contrôle qualité artisanal</p>
         </div>
       </div>
+    </div>
 
-      <!-- Stats -->
-      <div class="stats-grid">
-        <div class="stat-item reveal reveal-delay-1">
-          <div class="stat-number" data-target="100">0</div>
-          <div class="stat-label">% Fait en France</div>
-        </div>
-        <div class="stat-item reveal reveal-delay-2">
-          <div class="stat-number" data-target="5">0</div>
-          <div class="stat-label">Jours de livraison</div>
-        </div>
-        <div class="stat-item reveal reveal-delay-3">
-          <div class="stat-number" data-target="32">0</div>
-          <div class="stat-label">Pays expédiés</div>
-        </div>
-        <div class="stat-item reveal reveal-delay-4">
-          <div class="stat-number" data-target="2400">0</div>
-          <div class="stat-label">Pièces créées</div>
-        </div>
-      </div>
+    <div class="stats-grid">
+      <div class="stat-item reveal reveal-delay-1"><div class="stat-number" data-target="100">0</div><div class="stat-label">% Fait en France</div></div>
+      <div class="stat-item reveal reveal-delay-2"><div class="stat-number" data-target="5">0</div><div class="stat-label">Jours de livraison</div></div>
+      <div class="stat-item reveal reveal-delay-3"><div class="stat-number" data-target="32">0</div><div class="stat-label">Pays expédiés</div></div>
+      <div class="stat-item reveal reveal-delay-4"><div class="stat-number" data-target="2400">0</div><div class="stat-label">Pièces créées</div></div>
     </div>
   </section>
 
@@ -1579,7 +1493,7 @@ footer {
 
   <!-- ===== CHECKOUT ===== -->
   <section id="section-checkout">
-    <div class="section-header reveal">
+    <div class="section-header reveal" style="margin-bottom:3rem;">
       <span class="section-eyebrow">Finaliser ma commande</span>
       <h2 class="section-title">Paiement <em>sécurisé</em></h2>
     </div>
@@ -1590,70 +1504,43 @@ footer {
           <div class="form-group"><label>Prénom</label><input type="text" placeholder="Marie" id="c-fname"></div>
           <div class="form-group"><label>Nom</label><input type="text" placeholder="Dupont" id="c-lname"></div>
         </div>
-        <div class="form-group"><label>Email</label><input type="email" placeholder="marie@email.com" id="c-email"></div>
-        <div class="form-group"><label>Adresse</label><input type="text" placeholder="12 rue des Lilas" id="c-addr"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="marie@email.com"></div>
+        <div class="form-group"><label>Adresse</label><input type="text" placeholder="12 rue des Lilas"></div>
         <div class="form-row">
-          <div class="form-group"><label>Ville</label><input type="text" placeholder="Paris" id="c-city"></div>
-          <div class="form-group"><label>Code postal</label><input type="text" placeholder="75001" id="c-zip"></div>
+          <div class="form-group"><label>Ville</label><input type="text" placeholder="Paris"></div>
+          <div class="form-group"><label>Code postal</label><input type="text" placeholder="75001"></div>
         </div>
         <div class="form-group">
           <label>Pays</label>
-          <select id="c-country" style="background:var(--dark2);border:1px solid var(--glass-border);color:var(--text);padding:.9rem 1rem;width:100%;outline:none;">
-            <option value="FR">France</option>
-            <option value="BE">Belgique</option>
-            <option value="CH">Suisse</option>
-            <option value="LU">Luxembourg</option>
-            <option value="CA">Canada</option>
+          <select style="background:var(--dark2);border:1px solid var(--glass-border);color:var(--text);padding:.9rem 1rem;width:100%;outline:none;-webkit-appearance:none;">
+            <option>France</option><option>Belgique</option><option>Suisse</option><option>Luxembourg</option><option>Canada</option>
           </select>
         </div>
-
-        <h3 style="margin-top:2.5rem;">Carte bancaire</h3>
+        <h3 style="margin-top:2rem;">Carte bancaire</h3>
         <div class="card-input-wrapper">
-          <div class="card-chips">
-            <span class="card-chip">VISA</span>
-            <span class="card-chip">Mastercard</span>
-            <span class="card-chip">Amex</span>
-          </div>
+          <div class="card-chips"><span class="card-chip">VISA</span><span class="card-chip">Mastercard</span><span class="card-chip">Amex</span></div>
           <div class="card-number-display" id="card-display">•••• •••• •••• ••••</div>
           <div class="form-group" style="margin-bottom:.8rem;">
             <label>Numéro de carte</label>
-            <input type="text" placeholder="4242 4242 4242 4242" maxlength="19" id="card-num" oninput="formatCard(this)">
+            <input type="text" placeholder="4242 4242 4242 4242" maxlength="19" oninput="formatCard(this)">
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label>Date d'expiration</label>
-              <input type="text" placeholder="MM / AA" maxlength="7" id="card-exp" oninput="formatExp(this)">
-            </div>
-            <div class="form-group">
-              <label>CVV</label>
-              <input type="text" placeholder="•••" maxlength="3" id="card-cvv">
-            </div>
+            <div class="form-group"><label>Expiration</label><input type="text" placeholder="MM / AA" maxlength="7" oninput="formatExp(this)"></div>
+            <div class="form-group"><label>CVV</label><input type="text" placeholder="•••" maxlength="3"></div>
           </div>
         </div>
       </div>
-
       <div class="checkout-summary">
-        <h3>Résumé de la commande</h3>
+        <h3>Résumé</h3>
         <div id="checkout-items"></div>
-        <div class="summary-item" style="margin-top:1rem;">
-          <span>Sous-total</span>
-          <span id="summary-subtotal">0,00 €</span>
-        </div>
-        <div class="summary-item">
-          <span>Livraison</span>
-          <span style="color:#78c878;">Offerte</span>
-        </div>
-        <div class="summary-item total">
-          <span>Total</span>
-          <span class="summary-price" id="summary-total">0,00 €</span>
-        </div>
+        <div class="summary-item" style="margin-top:1rem;"><span>Sous-total</span><span id="summary-subtotal">0,00 €</span></div>
+        <div class="summary-item"><span>Livraison</span><span style="color:#78c878;">Offerte</span></div>
+        <div class="summary-item total"><span>Total</span><span class="summary-price" id="summary-total">0,00 €</span></div>
         <button class="btn-pay" id="pay-btn" onclick="processPayment()">
           <div class="pay-loader"></div>
           <span class="pay-text">Confirmer le paiement</span>
         </button>
-        <p style="font-size:.65rem;color:var(--text-dim);text-align:center;margin-top:1rem;line-height:1.6;">
-          🔒 Paiement 100% sécurisé — SSL 256 bits<br>Aucun frais caché
-        </p>
+        <p style="font-size:.65rem;color:var(--text-dim);text-align:center;margin-top:1rem;line-height:1.6;">🔒 Paiement 100% sécurisé — SSL 256 bits</p>
       </div>
     </div>
   </section>
@@ -1676,11 +1563,11 @@ footer {
           </button>
           <button class="profile-tab" onclick="switchTab(this,'tab-orders')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-            Mes Commandes
+            Commandes
           </button>
           <button class="profile-tab" onclick="switchTab(this,'tab-tracking')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Suivi de Commande
+            Suivi
           </button>
         </div>
       </div>
@@ -1695,95 +1582,38 @@ footer {
             <div class="form-group"><label>Email</label><input type="email" value="marie.fontaine@email.com"></div>
             <div class="form-group"><label>Téléphone</label><input type="tel" value="+33 6 12 34 56 78"></div>
             <div class="form-group"><label>Adresse</label><input type="text" value="24 avenue Montaigne, 75008 Paris"></div>
-            <button style="margin-top:1rem;padding:.9rem 2rem;border:1px solid var(--gold);color:var(--gold);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;transition:all .3s;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--black)';" onmouseout="this.style.background='transparent';this.style.color='var(--gold)';">Enregistrer</button>
+            <button class="btn-outline" style="margin-top:1rem;">Enregistrer</button>
           </div>
         </div>
         <div id="tab-orders">
           <h3 style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--cream);margin-bottom:1.5rem;">Mes commandes</h3>
           <div class="orders-list">
             <div class="order-card">
-              <div>
-                <div class="order-ref">#STR-20251104</div>
-                <div class="order-name">Vase Nébuleuse + Vase Éclipse</div>
-                <div class="order-date">4 novembre 2025</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="order-status status-delivered">Livré</div>
-                <div class="order-total" style="margin-top:.5rem;">198,00 €</div>
-              </div>
+              <div><div class="order-ref">#STR-20251104</div><div class="order-name">Vase Nébuleuse + Vase Éclipse</div><div class="order-date">4 novembre 2025</div></div>
+              <div style="text-align:right;"><div class="order-status status-delivered">Livré</div><div class="order-total">198,00 €</div></div>
             </div>
             <div class="order-card">
-              <div>
-                <div class="order-ref">#STR-20251028</div>
-                <div class="order-name">Vase Solstice</div>
-                <div class="order-date">28 octobre 2025</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="order-status status-delivered">Livré</div>
-                <div class="order-total" style="margin-top:.5rem;">89,00 €</div>
-              </div>
+              <div><div class="order-ref">#STR-20251028</div><div class="order-name">Vase Solstice</div><div class="order-date">28 octobre 2025</div></div>
+              <div style="text-align:right;"><div class="order-status status-delivered">Livré</div><div class="order-total">89,00 €</div></div>
             </div>
             <div class="order-card">
-              <div>
-                <div class="order-ref">#STR-20251201</div>
-                <div class="order-name">Vase Zénith Doré</div>
-                <div class="order-date">1er décembre 2025</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="order-status status-shipped">Expédié</div>
-                <div class="order-total" style="margin-top:.5rem;">149,00 €</div>
-              </div>
+              <div><div class="order-ref">#STR-20251201</div><div class="order-name">Vase Zénith Doré</div><div class="order-date">1er décembre 2025</div></div>
+              <div style="text-align:right;"><div class="order-status status-shipped">Expédié</div><div class="order-total">149,00 €</div></div>
             </div>
           </div>
         </div>
         <div id="tab-tracking">
           <h3 style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--cream);margin-bottom:1.5rem;">Suivi de commande</h3>
-          <div class="tracking-timeline">
-            <div class="tracking-header">
-              <div>
-                <div class="order-ref">#STR-20251201 — Suivi en cours</div>
-                <div class="tracking-ref">Vase Zénith Doré</div>
-              </div>
-              <div class="order-status status-shipped">Expédié</div>
-            </div>
-            <div class="timeline">
-              <div class="timeline-item">
-                <div class="timeline-dot done">
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div class="timeline-title">Commande confirmée</div>
-                <div class="timeline-date">1 déc. 2025 — 10:32</div>
-                <div class="timeline-desc">Votre paiement a été validé. Merci pour votre confiance.</div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-dot done">
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div class="timeline-title">En cours de fabrication</div>
-                <div class="timeline-date">1 déc. 2025 — 14:00</div>
-                <div class="timeline-desc">Votre vase est en cours d'impression dans notre atelier parisien.</div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-dot done">
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div class="timeline-title">Finitions & contrôle qualité</div>
-                <div class="timeline-date">3 déc. 2025 — 09:15</div>
-                <div class="timeline-desc">Ponçage, patine et emballage soigneux effectués.</div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-dot active"></div>
-                <div class="timeline-title">Expédié — En transit</div>
-                <div class="timeline-date">4 déc. 2025 — 11:00</div>
-                <div class="timeline-desc">Colis remis à Colissimo. N° de suivi : 6A1234567890FR</div>
-              </div>
-              <div class="timeline-item" style="opacity:.4;">
-                <div class="timeline-dot"></div>
-                <div class="timeline-title">Livraison prévue</div>
-                <div class="timeline-date">6 déc. 2025</div>
-                <div class="timeline-desc">Livraison estimée entre 8h et 13h à votre adresse.</div>
-              </div>
-            </div>
+          <div class="tracking-header">
+            <div><div class="order-ref">#STR-20251201</div><div class="tracking-ref">Vase Zénith Doré</div></div>
+            <div class="order-status status-shipped">Expédié</div>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item"><div class="timeline-dot done"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div class="timeline-title">Commande confirmée</div><div class="timeline-date">1 déc. 2025 — 10:32</div><div class="timeline-desc">Votre paiement a été validé.</div></div>
+            <div class="timeline-item"><div class="timeline-dot done"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div class="timeline-title">En cours de fabrication</div><div class="timeline-date">1 déc. 2025 — 14:00</div><div class="timeline-desc">Votre vase est en cours d'impression dans notre atelier.</div></div>
+            <div class="timeline-item"><div class="timeline-dot done"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><div class="timeline-title">Finitions &amp; contrôle qualité</div><div class="timeline-date">3 déc. 2025 — 09:15</div><div class="timeline-desc">Ponçage, patine et emballage soigneux effectués.</div></div>
+            <div class="timeline-item"><div class="timeline-dot active"></div><div class="timeline-title">Expédié — En transit</div><div class="timeline-date">4 déc. 2025 — 11:00</div><div class="timeline-desc">N° de suivi : 6A1234567890FR</div></div>
+            <div class="timeline-item" style="opacity:.4;"><div class="timeline-dot"></div><div class="timeline-title">Livraison prévue</div><div class="timeline-date">6 déc. 2025</div><div class="timeline-desc">Livraison estimée entre 8h et 13h.</div></div>
           </div>
         </div>
       </div>
@@ -1820,7 +1650,7 @@ footer {
   </div>
 </div>
 
-<!-- Confirm overlay -->
+<!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-icon">
     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
@@ -1829,7 +1659,7 @@ footer {
   </div>
   <h2 class="confirm-title">Commande confirmée !</h2>
   <p class="confirm-sub">Un email de confirmation vous a été envoyé.<br>Votre vase sera imprimé sous 24h.</p>
-  <button style="padding:.9rem 2.5rem;border:1px solid var(--gold);color:var(--gold);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;margin-top:1rem;transition:all .3s;" onclick="closeConfirm()" onmouseover="this.style.background='var(--gold)';this.style.color='var(--black)';" onmouseout="this.style.background='transparent';this.style.color='var(--gold)';">Suivre ma commande</button>
+  <button class="btn-outline" onclick="closeConfirm()">Suivre ma commande</button>
 </div>
 
 <script>
@@ -1837,47 +1667,69 @@ footer {
 const cursor = document.getElementById('cursor');
 const cursorRing = document.getElementById('cursor-ring');
 let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+const isMobile = () => window.innerWidth <= 768;
+document.addEventListener('mousemove', e => {
+  if (isMobile()) return;
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+});
 (function animRing() {
-  rx += (mx - rx) * .12; ry += (my - ry) * .12;
-  cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
+  if (!isMobile()) {
+    rx += (mx - rx) * .12; ry += (my - ry) * .12;
+    cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
+  }
   requestAnimationFrame(animRing);
 })();
 
-// ===== INTRO ANIMATION =====
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const ham = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  ham.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ===== INTRO =====
 const introCanvas = document.getElementById('intro-canvas');
 const ictx = introCanvas.getContext('2d');
-introCanvas.width = window.innerWidth;
-introCanvas.height = window.innerHeight;
+function resizeIntro() {
+  introCanvas.width = window.innerWidth;
+  introCanvas.height = window.innerHeight;
+}
+resizeIntro();
 let introLayers = 0;
-const totalLayers = 60;
+const totalLayers = 50;
 
 function drawIntroVase() {
   ictx.clearRect(0, 0, introCanvas.width, introCanvas.height);
   const cx = introCanvas.width / 2, cy = introCanvas.height / 2;
-  const vaseH = 280, startY = cy + vaseH/2;
+  const vaseH = Math.min(280, introCanvas.height * 0.5);
+  const startY = cy + vaseH / 2;
   const layersDone = Math.min(introLayers, totalLayers);
   for (let i = 0; i < layersDone; i++) {
     const t = i / totalLayers;
     const y = startY - (i * vaseH / totalLayers);
-    // vase profile: narrow at top, wide in middle, narrow at neck, wider at base
     let r;
     if (t < 0.05) r = 12 + t * 100;
-    else if (t < 0.15) r = 12 + 5 - (t-0.05)*20;
-    else if (t < 0.45) r = 9 + (t-0.15) * 180;
-    else if (t < 0.6) r = 63 - (t-0.45)*120;
-    else if (t < 0.75) r = 45 + (t-0.6)*40;
-    else r = 51 - (t-0.75)*60;
-    r = Math.max(r, 8);
+    else if (t < 0.15) r = 12 + 5 - (t - 0.05) * 20;
+    else if (t < 0.45) r = 9 + (t - 0.15) * 180;
+    else if (t < 0.6) r = 63 - (t - 0.45) * 120;
+    else if (t < 0.75) r = 45 + (t - 0.6) * 40;
+    else r = 51 - (t - 0.75) * 60;
+    r = Math.max(r, 8) * (introCanvas.width < 400 ? 0.6 : 1);
     const alpha = 0.5 + t * 0.5;
-    const gold = `rgba(${Math.floor(150 + t*80)}, ${Math.floor(100 + t*70)}, ${Math.floor(40 + t*30)}, ${alpha})`;
     ictx.beginPath();
     ictx.moveTo(cx - r, y);
     ictx.lineTo(cx + r, y);
-    ictx.strokeStyle = gold;
-    ictx.lineWidth = vaseH / totalLayers + .5;
+    ictx.strokeStyle = `rgba(${Math.floor(150 + t * 80)},${Math.floor(100 + t * 70)},${Math.floor(40 + t * 30)},${alpha})`;
+    ictx.lineWidth = vaseH / totalLayers + 0.5;
     ictx.stroke();
-    // glow on last layer
     if (i === layersDone - 1) {
       ictx.shadowBlur = 20; ictx.shadowColor = '#c9a96e';
       ictx.beginPath(); ictx.moveTo(cx - r, y); ictx.lineTo(cx + r, y);
@@ -1887,38 +1739,26 @@ function drawIntroVase() {
   }
 }
 
-// Animate layers
-let layerInterval;
-function startIntro() {
-  layerInterval = setInterval(() => {
-    introLayers++;
-    drawIntroVase();
-    if (introLayers >= totalLayers) {
-      clearInterval(layerInterval);
-      setTimeout(showBrandName, 200);
-    }
-  }, 45);
-}
-startIntro();
+let layerInterval = setInterval(() => {
+  introLayers++;
+  drawIntroVase();
+  if (introLayers >= totalLayers) { clearInterval(layerInterval); setTimeout(showBrandName, 200); }
+}, 40);
 
-// Brand name letter-by-letter
 function showBrandName() {
   const letters = 'STRATA'.split('');
   const container = document.getElementById('intro-letters');
   letters.forEach((l, i) => {
     const span = document.createElement('span');
-    span.textContent = l === 'R' ? l : l;
+    span.textContent = l;
     container.appendChild(span);
-    setTimeout(() => {
-      span.style.opacity = '1';
-      span.style.transform = 'translateY(0)';
-    }, i * 120);
+    setTimeout(() => { span.style.opacity = '1'; span.style.transform = 'translateY(0)'; }, i * 110);
   });
   setTimeout(() => {
-    document.getElementById('intro-line').style.width = '200px';
+    document.getElementById('intro-line').style.width = '160px';
     document.getElementById('intro-tagline').style.opacity = '1';
-  }, 900);
-  setTimeout(hideIntro, 1800);
+  }, 800);
+  setTimeout(hideIntro, 1700);
 }
 
 function hideIntro() {
@@ -1932,30 +1772,25 @@ function hideIntro() {
   }, 800);
 }
 
-// ===== HERO CANVAS (particles) =====
+// ===== HERO CANVAS =====
 function startHeroCanvas() {
   const canvas = document.getElementById('hero-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-
-  const pts = Array.from({length: 80}, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    vx: (Math.random() - .5) * .4,
-    vy: (Math.random() - .5) * .4,
+  const count = isMobile() ? 40 : 80;
+  const pts = Array.from({length: count}, () => ({
+    x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+    vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
     r: Math.random() * 1.5 + .3
   }));
-
   function drawHero() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // grid
-    ctx.strokeStyle = 'rgba(201,169,110,0.04)';
-    ctx.lineWidth = 1;
-    for (let x = 0; x < canvas.width; x += 80) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
-    for (let y = 0; y < canvas.height; y += 80) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
-    // particles
+    const gridSize = isMobile() ? 60 : 80;
+    ctx.strokeStyle = 'rgba(201,169,110,0.04)'; ctx.lineWidth = 1;
+    for (let x = 0; x < canvas.width; x += gridSize) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
+    for (let y = 0; y < canvas.height; y += gridSize) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
     pts.forEach(p => {
       p.x += p.vx; p.y += p.vy;
       if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
@@ -1963,13 +1798,13 @@ function startHeroCanvas() {
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
       ctx.fillStyle = 'rgba(201,169,110,0.4)'; ctx.fill();
     });
-    // connections
+    const linkDist = isMobile() ? 80 : 120;
     pts.forEach((p, i) => {
       pts.slice(i+1).forEach(q => {
         const d = Math.hypot(p.x-q.x, p.y-q.y);
-        if (d < 120) {
+        if (d < linkDist) {
           ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
-          ctx.strokeStyle = `rgba(201,169,110,${.15*(1-d/120)})`; ctx.lineWidth = .5; ctx.stroke();
+          ctx.strokeStyle = `rgba(201,169,110,${.15*(1-d/linkDist)})`; ctx.lineWidth = .5; ctx.stroke();
         }
       });
     });
@@ -1980,28 +1815,19 @@ function startHeroCanvas() {
 
 // ===== TYPEWRITER =====
 function startTypewriter() {
-  const texts = [
-    'Vases imprimés couche par couche, finis à la main.',
-    'Chaque pièce est unique, signée de notre atelier.',
-    'L\'impression 3D réinvente l\'art décoratif.'
-  ];
+  const texts = ['Vases imprimés couche par couche, finis à la main.','Chaque pièce est unique, signée de notre atelier.','L\'impression 3D réinvente l\'art décoratif.'];
   let ti = 0, ci = 0, del = false;
   const el = document.getElementById('typewriter-text');
   if (!el) return;
   function type() {
-    if (!del) {
-      el.textContent = texts[ti].slice(0, ci++);
-      if (ci > texts[ti].length) { del = true; setTimeout(type, 2000); return; }
-    } else {
-      el.textContent = texts[ti].slice(0, ci--);
-      if (ci < 0) { del = false; ti = (ti+1) % texts.length; ci = 0; }
-    }
-    setTimeout(type, del ? 30 : 55);
+    if (!del) { el.textContent = texts[ti].slice(0, ci++); if (ci > texts[ti].length) { del = true; setTimeout(type, 1800); return; } }
+    else { el.textContent = texts[ti].slice(0, ci--); if (ci < 0) { del = false; ti = (ti+1) % texts.length; ci = 0; } }
+    setTimeout(type, del ? 28 : 52);
   }
   type();
 }
 
-// ===== NAVIGATION =====
+// ===== NAV SCROLL =====
 window.addEventListener('scroll', () => {
   document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
 });
@@ -2009,10 +1835,7 @@ window.addEventListener('scroll', () => {
 // ===== SECTION NAVIGATION =====
 const sections = ['home','about','catalogue','checkout','profile','faq'];
 function showSection(name) {
-  sections.forEach(s => {
-    const el = document.getElementById('section-'+s);
-    if (el) el.classList.remove('active');
-  });
+  sections.forEach(s => { const el = document.getElementById('section-'+s); if (el) el.classList.remove('active'); });
   const target = document.getElementById('section-'+name);
   if (target) {
     target.classList.add('active');
@@ -2026,179 +1849,66 @@ function showSection(name) {
 
 // ===== SCROLL REVEAL =====
 function initScrollReveal() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        // Counter animation
-        const num = e.target.querySelector ? e.target.querySelector('[data-target]') : null;
-        if (e.target.dataset && e.target.dataset.target) animateCounter(e.target);
-      }
-    });
-  }, { threshold: 0.15 });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
   document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
   document.querySelectorAll('[data-target]').forEach(el => {
-    new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) animateCounter(el);
-    }, {threshold: 0.5}).observe(el);
+    new IntersectionObserver(([entry]) => { if (entry.isIntersecting) animateCounter(el); }, {threshold: 0.5}).observe(el);
   });
 }
 
 function animateCounter(el) {
   const target = parseInt(el.dataset.target);
-  const duration = 1800;
   const start = performance.now();
   function step(now) {
-    const t = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - t, 3);
+    const t = Math.min((now - start) / 1800, 1);
+    const ease = 1 - Math.pow(1-t, 3);
     el.textContent = Math.round(ease * target).toLocaleString('fr-FR');
     if (t < 1) requestAnimationFrame(step);
-    else el.textContent = target >= 1000 ? target.toLocaleString('fr-FR') : target + (target === 5 ? ' jours' : '');
   }
   requestAnimationFrame(step);
 }
 
 // ===== PRODUCTS DATA =====
+// Pour ajouter une image : remplacez "" par votre URL dans le champ "img"
 const products = [
-  {
-    id: 1, name: 'Nébuleuse', badge: 'new',
-    desc: 'PLA biosourcé mat, surface texturée évoquant la vapeur cosmique. H 28cm, Ø 12cm. Style contemporain organique.',
-    price: 79, material: 'pla', category: 'pla',
-    color: '#2a1f3d', accent: '#9b72cf',
-    svgPath: `<ellipse cx="70" cy="165" rx="45" ry="8" fill="#9b72cf" opacity=".2"/>
-      <path d="M25 165 Q18 130 22 100 Q28 70 35 55 Q50 30 65 20 Q75 18 85 20 Q100 30 115 55 Q122 70 128 100 Q132 130 115 165 Z" fill="url(https://cdn.phototourl.com/member/2026-05-12-8b35ad38-b07f-4d70-881e-9dd21b5baf1d.jpg)" opacity=".9"/>
-      <path d="M40 140 Q70 136 100 140" stroke="#9b72cf" stroke-width=".8" opacity=".5"/>
-      <path d="M37 128 Q70 124 103 128" stroke="#9b72cf" stroke-width=".8" opacity=".5"/>
-      <path d="M35 116 Q70 112 105 116" stroke="#9b72cf" stroke-width=".8" opacity=".5"/>
-      <path d="M34 104 Q70 100 106 104" stroke="#9b72cf" stroke-width=".8" opacity=".4"/>
-      <path d="M35 92 Q70 88 105 92" stroke="#9b72cf" stroke-width=".8" opacity=".4"/>
-      <path d="M37 80 Q70 76 103 80" stroke="#9b72cf" stroke-width=".8" opacity=".3"/>
-      <path d="M42 68 Q70 64 98 68" stroke="#9b72cf" stroke-width=".8" opacity=".3"/>
-      <path d="M50 56 Q70 52 90 56" stroke="#9b72cf" stroke-width=".8" opacity=".3"/>`,
-    gradDef: `<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#9b72cf"/><stop offset="100%" stop-color="#4a2980"/></linearGradient>`
-  },
-  {
-    id: 2, name: 'Éclipse', badge: 'best',
-    desc: 'Résine translucide dorée, double paroi avec reflets intérieurs. H 32cm, Ø 10cm. Pièce maîtresse de salon.',
-    price: 129, material: 'resine', category: 'resine',
-    color: '#1a1408', accent: '#c9a96e',
-    svgPath: `<ellipse cx="70" cy="180" rx="35" ry="7" fill="#c9a96e" opacity=".2"/>
-      <path d="M35 180 Q28 150 30 115 Q32 85 38 65 Q50 35 65 22 Q70 19 75 22 Q90 35 102 65 Q108 85 110 115 Q112 150 105 180 Z" fill="url(#g2)" opacity=".9"/>
-      <path d="M47 35 Q70 30 93 35" stroke="#c9a96e" stroke-width="1" opacity=".6"/>`,
-    gradDef: `<linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e2c99a"/><stop offset="60%" stop-color="#c9a96e"/><stop offset="100%" stop-color="#5a3f10"/></linearGradient>`
-  },
-  {
-    id: 3, name: 'Solstice', badge: 'limited',
-    desc: 'PLA blanc nacré, formes géométriques hélicoïdales. H 22cm, Ø 14cm. Inspiré des solstices nordiques.',
-    price: 89, material: 'pla', category: 'edition',
-    color: '#141414', accent: '#e8e4dc',
-    svgPath: `<ellipse cx="70" cy="160" rx="52" ry="9" fill="#e8e4dc" opacity=".15"/>
-      <path d="M18 160 Q14 125 20 95 Q30 60 50 38 Q60 27 70 25 Q80 27 90 38 Q110 60 120 95 Q126 125 122 160 Z" fill="url(#g3)" opacity=".85"/>
-      <path d="M30 130 Q70 118 110 130" stroke="#e8e4dc" stroke-width=".7" opacity=".4"/>
-      <path d="M28 115 Q70 103 112 115" stroke="#e8e4dc" stroke-width=".7" opacity=".3"/>
-      <path d="M26 100 Q70 88 114 100" stroke="#e8e4dc" stroke-width=".7" opacity=".3"/>
-      <path d="M28 85 Q70 73 112 85" stroke="#e8e4dc" stroke-width=".7" opacity=".25"/>`,
-    gradDef: `<linearGradient id="g3" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#888"/><stop offset="100%" stop-color="#e8e4dc"/></linearGradient>`
-  },
-  {
-    id: 4, name: 'Zénith Doré', badge: 'limited',
-    desc: 'Résine premium finition or brossé, cannelures verticales. H 35cm, Ø 11cm. Édition limitée 50 exemplaires.',
-    price: 149, material: 'resine', category: 'edition',
-    color: '#1c1400', accent: '#d4a843',
-    svgPath: `<ellipse cx="70" cy="185" rx="38" ry="8" fill="#d4a843" opacity=".25"/>
-      <path d="M32 185 Q25 155 28 118 Q31 85 40 62 Q52 32 65 22 Q70 18 75 22 Q88 32 100 62 Q109 85 112 118 Q115 155 108 185 Z" fill="url(#g4)" opacity=".9"/>
-      <line x1="46" y1="22" x2="46" y2="185" stroke="#d4a843" stroke-width=".5" opacity=".3"/>
-      <line x1="57" y1="20" x2="57" y2="185" stroke="#d4a843" stroke-width=".5" opacity=".3"/>
-      <line x1="68" y1="18" x2="68" y2="185" stroke="#d4a843" stroke-width=".5" opacity=".3"/>
-      <line x1="79" y1="18" x2="79" y2="185" stroke="#d4a843" stroke-width=".5" opacity=".3"/>
-      <line x1="90" y1="20" x2="90" y2="185" stroke="#d4a843" stroke-width=".5" opacity=".3"/>`,
-    gradDef: `<linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c060"/><stop offset="50%" stop-color="#d4a843"/><stop offset="100%" stop-color="#6b4e10"/></linearGradient>`
-  },
-  {
-    id: 5, name: 'Marée Basse', badge: null,
-    desc: 'PLA bleu-vert océan, texture vague. H 25cm, Ø 15cm. Idéal pour compositions florales marines.',
-    price: 69, material: 'pla', category: 'pla',
-    color: '#061520', accent: '#3d8fa8',
-    svgPath: `<ellipse cx="70" cy="165" rx="50" ry="9" fill="#3d8fa8" opacity=".2"/>
-      <path d="M20 165 Q15 132 20 100 Q27 68 42 48 Q56 30 70 26 Q84 30 98 48 Q113 68 120 100 Q125 132 120 165 Z" fill="url(#g5)" opacity=".9"/>
-      <path d="M22 148 Q70 138 118 148" stroke="#3d8fa8" stroke-width=".8" opacity=".5" fill="none"/>
-      <path d="M20 134 Q70 124 120 134" stroke="#3d8fa8" stroke-width=".8" opacity=".4" fill="none"/>
-      <path d="M20 120 Q70 108 120 120" stroke="#3d8fa8" stroke-width=".8" opacity=".4" fill="none"/>
-      <path d="M21 106 Q70 94 119 106" stroke="#3d8fa8" stroke-width=".8" opacity=".3" fill="none"/>`,
-    gradDef: `<linearGradient id="g5" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#5bb8d4"/><stop offset="100%" stop-color="#1a4d5c"/></linearGradient>`
-  },
-  {
-    id: 6, name: 'Obsidienne', badge: 'best',
-    desc: 'PLA noir mat ultra-dense, formes concaves sculpturales. H 30cm, Ø 13cm. Design brutaliste épuré.',
-    price: 99, material: 'pla', category: 'pla',
-    color: '#0d0d0d', accent: '#555',
-    svgPath: `<ellipse cx="70" cy="175" rx="42" ry="8" fill="#555" opacity=".2"/>
-      <path d="M28 175 Q22 140 26 105 Q32 72 45 52 Q56 34 70 28 Q84 34 95 52 Q108 72 114 105 Q118 140 112 175 Z" fill="url(#g6)" opacity=".95"/>
-      <path d="M35 90 Q70 78 105 90 Q98 105 70 110 Q42 105 35 90Z" fill="rgba(255,255,255,0.04)"/>`,
-    gradDef: `<linearGradient id="g6" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#444"/><stop offset="100%" stop-color="#0a0a0a"/></linearGradient>`
-  },
-  {
-    id: 7, name: 'Terracotta Rift', badge: 'new',
-    desc: 'Résine couleur terre cuite naturelle, fissures décoratives imprimées. H 26cm, Ø 18cm. Esprit méditerranéen.',
-    price: 85, material: 'resine', category: 'resine',
-    color: '#1f0e08', accent: '#c2714f',
-    svgPath: `<ellipse cx="70" cy="162" rx="55" ry="10" fill="#c2714f" opacity=".2"/>
-      <path d="M15 162 Q12 128 18 96 Q28 62 48 44 Q60 32 70 28 Q80 32 92 44 Q112 62 122 96 Q128 128 125 162 Z" fill="url(#g7)" opacity=".9"/>
-      <path d="M42 100 Q44 80 70 76 Q96 80 98 100" stroke="#c2714f" stroke-width="1.5" opacity=".4" fill="none"/>
-      <path d="M32 135 Q35 115 70 110 Q105 115 108 135" stroke="#c2714f" stroke-width="1.5" opacity=".3" fill="none"/>`,
-    gradDef: `<linearGradient id="g7" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d4845e"/><stop offset="100%" stop-color="#7a3820"/></linearGradient>`
-  },
-  {
-    id: 8, name: 'Celadon', badge: null,
-    desc: 'PLA vert céladon satiné, inspiration poterie Song. H 20cm, Ø 10cm. Finesse et sobriété orientale.',
-    price: 59, material: 'pla', category: 'pla',
-    color: '#0d1710', accent: '#7ab89a',
-    svgPath: `<ellipse cx="70" cy="158" rx="32" ry="7" fill="#7ab89a" opacity=".2"/>
-      <path d="M38 158 Q32 130 34 100 Q38 72 46 54 Q56 34 70 28 Q84 34 94 54 Q102 72 106 100 Q108 130 102 158 Z" fill="url(#g8)" opacity=".9"/>
-      <ellipse cx="70" cy="28" rx="12" ry="5" fill="#7ab89a" opacity=".6"/>`,
-    gradDef: `<linearGradient id="g8" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#9dd4b6"/><stop offset="100%" stop-color="#3d7860"/></linearGradient>`
-  },
-  {
-    id: 9, name: 'Cendres Blanches', badge: 'new',
-    desc: 'Résine blanche givré effet porcelaine biscuit. H 24cm, Ø 16cm. Minimalisme scandinave.',
-    price: 95, material: 'resine', category: 'resine',
-    color: '#141414', accent: '#ddd8d0',
-    svgPath: `<ellipse cx="70" cy="160" rx="48" ry="9" fill="#ddd8d0" opacity=".15"/>
-      <path d="M22 160 Q18 128 24 96 Q32 64 50 44 Q60 32 70 28 Q80 32 90 44 Q108 64 116 96 Q122 128 118 160 Z" fill="url(#g9)" opacity=".85"/>
-      <path d="M28 100 Q70 90 112 100 Q108 120 70 126 Q32 120 28 100Z" fill="rgba(255,255,255,0.08)"/>`,
-    gradDef: `<linearGradient id="g9" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0ece6"/><stop offset="100%" stop-color="#aaa49e"/></linearGradient>`
-  },
-  {
-    id: 10, name: 'Aurore Boréale', badge: 'limited',
-    desc: 'Résine photochromique, change de couleur selon la lumière — vert, bleu, violet. H 29cm, Ø 12cm.',
-    price: 139, material: 'resine', category: 'edition',
-    color: '#060d12', accent: '#40e0d0',
-    svgPath: `<ellipse cx="70" cy="172" rx="38" ry="8" fill="#40e0d0" opacity=".2"/>
-      <path d="M32 172 Q26 142 30 108 Q34 78 44 58 Q55 36 70 28 Q85 36 96 58 Q106 78 110 108 Q114 142 108 172 Z" fill="url(#g10)" opacity=".9"/>
-      <path d="M38 120 Q70 108 102 120" stroke="#40e0d0" stroke-width="1" opacity=".4" fill="none"/>
-      <path d="M36 100 Q70 88 104 100" stroke="#a0e0ff" stroke-width="1" opacity=".3" fill="none"/>`,
-    gradDef: `<linearGradient id="g10" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#40e0d0"/><stop offset="50%" stop-color="#4a90d9"/><stop offset="100%" stop-color="#7b4fa8"/></linearGradient>`
-  }
+  { id:1, name:'Nébuleuse', badge:'new', desc:'PLA biosourcé mat, surface texturée évoquant la vapeur cosmique. H 28cm, Ø 12cm.', price:79, category:'pla', img:'' },
+  { id:2, name:'Éclipse', badge:'best', desc:'Résine translucide dorée, double paroi avec reflets intérieurs. H 32cm, Ø 10cm.', price:129, category:'resine', img:'' },
+  { id:3, name:'Solstice', badge:'limited', desc:'PLA blanc nacré, formes géométriques hélicoïdales. H 22cm, Ø 14cm.', price:89, category:'edition', img:'' },
+  { id:4, name:'Zénith Doré', badge:'limited', desc:'Résine premium finition or brossé, cannelures verticales. H 35cm. Édition 50 ex.', price:149, category:'edition', img:'' },
+  { id:5, name:'Marée Basse', badge:null, desc:'PLA bleu-vert océan, texture vague. H 25cm, Ø 15cm. Idéal pour floraux.', price:69, category:'pla', img:'' },
+  { id:6, name:'Obsidienne', badge:'best', desc:'PLA noir mat ultra-dense, formes concaves sculpturales. H 30cm, Ø 13cm.', price:99, category:'pla', img:'' },
+  { id:7, name:'Terracotta Rift', badge:'new', desc:'Résine couleur terre cuite naturelle, fissures décoratives. H 26cm, Ø 18cm.', price:85, category:'resine', img:'' },
+  { id:8, name:'Celadon', badge:null, desc:'PLA vert céladon satiné, inspiration poterie Song. H 20cm, Ø 10cm.', price:59, category:'pla', img:'' },
+  { id:9, name:'Cendres Blanches', badge:'new', desc:'Résine blanche givrée effet porcelaine biscuit. H 24cm, Ø 16cm.', price:95, category:'resine', img:'' },
+  { id:10, name:'Aurore Boréale', badge:'limited', desc:'Résine photochromique — change de couleur selon la lumière. H 29cm, Ø 12cm.', price:139, category:'edition', img:'' }
 ];
 
 function buildProductCard(p) {
-  const badgeMap = { new: ['badge-new', 'Nouveau'], best: ['badge-best', 'Bestseller'], limited: ['badge-limited', 'Édition Limitée'] };
+  const badgeMap = { new:['badge-new','Nouveau'], best:['badge-best','Bestseller'], limited:['badge-limited','Éd. Limitée'] };
   const b = p.badge ? badgeMap[p.badge] : null;
+  const hasImg = p.img && p.img.trim() !== '';
   return `
   <div class="product-card reveal" data-cat="${p.category}">
     ${b ? `<span class="product-badge ${b[0]}">${b[1]}</span>` : ''}
-    <div class="product-visual" style="background:${p.color};">
-      <svg width="140" height="200" viewBox="0 0 140 200" fill="none">
-        <defs>${p.gradDef}</defs>
-        ${p.svgPath}
-      </svg>
+    <div class="product-img-zone">
+      ${hasImg
+        ? `<img src="${p.img}" alt="${p.name}" loading="lazy" onload="this.classList.add('loaded')">`
+        : `<img src="" alt="${p.name}" style="display:none;">`
+      }
+      <div class="img-placeholder">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Ajouter une image</span>
+        <span style="font-size:.55rem;opacity:.4;letter-spacing:.05em;">products[${p.id-1}].img = "URL"</span>
+      </div>
     </div>
     <div class="product-info">
       <div class="product-name">${p.name}</div>
       <div class="product-desc">${p.desc}</div>
       <div class="product-meta">
         <div class="product-price">${p.price},00 €</div>
-        <button class="btn-add" onclick="addToCart(${p.id})"><span>+ Panier</span></button>
+        <button class="btn-add" onclick="addToCart(${p.id}, event)"><span>+ Panier</span></button>
       </div>
     </div>
   </div>`;
@@ -2206,9 +1916,7 @@ function buildProductCard(p) {
 
 function renderProducts(filter = 'all') {
   const grid = document.getElementById('products-grid');
-  grid.innerHTML = products
-    .filter(p => filter === 'all' || p.category === filter)
-    .map(buildProductCard).join('');
+  grid.innerHTML = products.filter(p => filter === 'all' || p.category === filter).map(buildProductCard).join('');
   initScrollReveal();
 }
 renderProducts();
@@ -2221,28 +1929,23 @@ function filterProducts(btn, cat) {
 
 // ===== CART =====
 let cart = JSON.parse(localStorage.getItem('strata_cart') || '[]');
-
 function saveCart() { localStorage.setItem('strata_cart', JSON.stringify(cart)); }
 
-function addToCart(id) {
+function addToCart(id, event) {
   const product = products.find(p => p.id === id);
   const existing = cart.find(i => i.id === id);
   if (existing) existing.qty++;
-  else cart.push({ id, name: product.name, price: product.price, qty: 1, accent: product.accent });
+  else cart.push({ id, name: product.name, price: product.price, qty: 1, img: product.img });
   saveCart(); updateCartUI();
-  // visual feedback
   const btn = event.target.closest('button');
   if (btn) {
-    btn.querySelector('span').textContent = '✓ Ajouté';
-    setTimeout(() => { btn.querySelector('span').textContent = '+ Panier'; }, 1200);
+    const sp = btn.querySelector('span');
+    sp.textContent = '✓ Ajouté';
+    setTimeout(() => { sp.textContent = '+ Panier'; }, 1200);
   }
 }
 
-function removeFromCart(id) {
-  cart = cart.filter(i => i.id !== id);
-  saveCart(); updateCartUI(); renderCartItems();
-}
-
+function removeFromCart(id) { cart = cart.filter(i => i.id !== id); saveCart(); updateCartUI(); renderCartItems(); }
 function changeQty(id, delta) {
   const item = cart.find(i => i.id === id);
   if (!item) return;
@@ -2271,10 +1974,14 @@ function renderCartItems() {
     </div>`;
     return;
   }
-  container.innerHTML = cart.map(item => `
-    <div class="cart-item">
+  container.innerHTML = cart.map(item => {
+    const hasImg = item.img && item.img.trim() !== '';
+    return `<div class="cart-item">
       <div class="cart-item-thumb">
-        <div style="width:30px;height:50px;background:linear-gradient(135deg,${item.accent},#1a1812);border-radius:2px 2px 4px 4px;"></div>
+        ${hasImg
+          ? `<img src="${item.img}" alt="${item.name}">`
+          : `<div class="thumb-placeholder"><svg width="20" height="32" viewBox="0 0 20 36" fill="none"><path d="M4 34 Q2 26 3 18 Q5 10 8 6 Q10 2 10 2 Q10 2 12 6 Q15 10 17 18 Q18 26 16 34 Z" fill="rgba(201,169,110,0.2)" stroke="rgba(201,169,110,0.4)" stroke-width=".5"/></svg></div>`
+        }
       </div>
       <div>
         <div class="cart-item-name">${item.name}</div>
@@ -2286,45 +1993,37 @@ function renderCartItems() {
         </div>
       </div>
       <button class="cart-item-remove" onclick="removeFromCart(${item.id})">Retirer</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function toggleCart() {
   document.getElementById('cart-sidebar').classList.toggle('open');
   document.getElementById('cart-overlay').classList.toggle('active');
+  document.body.style.overflow = document.getElementById('cart-sidebar').classList.contains('open') ? 'hidden' : '';
   renderCartItems();
 }
 
-function goToCheckout() {
-  toggleCart();
-  showSection('checkout');
-}
-
+function goToCheckout() { toggleCart(); showSection('checkout'); }
 updateCartUI();
 
 // ===== CHECKOUT =====
 function updateCheckoutSummary() {
   const items = document.getElementById('checkout-items');
   const subtotal = cart.reduce((s,i) => s + i.price*i.qty, 0);
-  items.innerHTML = cart.map(i => `
-    <div class="summary-item">
-      <span>${i.name} ×${i.qty}</span>
-      <span>${(i.price*i.qty).toFixed(2).replace('.',',')} €</span>
-    </div>`).join('') || '<p style="font-size:.82rem;color:var(--text-dim);">Aucun article</p>';
+  items.innerHTML = cart.map(i => `<div class="summary-item"><span>${i.name} ×${i.qty}</span><span>${(i.price*i.qty).toFixed(2).replace('.',',')} €</span></div>`).join('') || '<p style="font-size:.82rem;color:var(--text-dim);">Aucun article</p>';
   document.getElementById('summary-subtotal').textContent = subtotal.toFixed(2).replace('.',',') + ' €';
   document.getElementById('summary-total').textContent = subtotal.toFixed(2).replace('.',',') + ' €';
 }
 
 function formatCard(input) {
-  let v = input.value.replace(/\D/g, '').slice(0, 16);
-  input.value = v.replace(/(.{4})/g, '$1 ').trim();
-  const display = document.getElementById('card-display');
-  const padded = v.padEnd(16, '•');
-  display.textContent = padded.replace(/(.{4})/g, '$1 ').trim();
+  let v = input.value.replace(/\D/g,'').slice(0,16);
+  input.value = v.replace(/(.{4})/g,'$1 ').trim();
+  const d = document.getElementById('card-display');
+  if (d) d.textContent = v.padEnd(16,'•').replace(/(.{4})/g,'$1 ').trim();
 }
-
 function formatExp(input) {
-  let v = input.value.replace(/\D/g, '').slice(0, 4);
+  let v = input.value.replace(/\D/g,'').slice(0,4);
   if (v.length >= 2) v = v.slice(0,2) + ' / ' + v.slice(2);
   input.value = v;
 }
@@ -2345,7 +2044,7 @@ function closeConfirm() {
   setTimeout(() => {
     document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('#section-profile .profile-content > div').forEach(d => d.classList.remove('active'));
-    document.querySelector('.profile-tab:last-child').classList.add('active');
+    document.querySelectorAll('.profile-tab')[2].classList.add('active');
     document.getElementById('tab-tracking').classList.add('active');
   }, 100);
 }
@@ -2360,49 +2059,39 @@ function switchTab(btn, tabId) {
 
 // ===== FAQ =====
 const faqs = [
-  { q: 'Quels matériaux utilisez-vous pour imprimer vos vases ?', a: 'Nous utilisons principalement du PLA biosourcé (acide polylactique d\'origine végétale) pour nos pièces mats et texturées, et de la résine photopolymère de haute précision pour nos créations translucides et détaillées. Tous nos matériaux sont non toxiques et respectueux de l\'environnement.' },
-  { q: 'Puis-je mettre de l\'eau dans mes vases STRATA ?', a: 'La grande majorité de nos vases en résine sont imperméables et peuvent contenir de l\'eau directement. Nos vases en PLA, selon leur finition, nécessitent un vase intérieur en verre ou plastique. Chaque fiche produit précise cette information. En cas de doute, nous conseillons l\'utilisation d\'un liner transparent discret.' },
-  { q: 'Combien de temps dure l\'impression d\'un vase ?', a: 'Selon la complexité et la taille, l\'impression prend entre 6 et 18 heures. À cela s\'ajoutent les étapes de finition : ponçage, application de la patine, contrôle qualité et emballage. Comptez 2 à 3 jours ouvrés de fabrication après confirmation de votre commande.' },
-  { q: 'Quels sont vos délais et options de livraison ?', a: 'Nous expédions sous 2-3 jours ouvrés après fabrication. La livraison standard en France métropolitaine prend 1 à 2 jours supplémentaires (Colissimo suivi). Livraison offerte dès 89€ d\'achat. Nous livrons dans 32 pays — contactez-nous pour un devis international.' },
-  { q: 'Proposez-vous des créations sur mesure ?', a: 'Absolument ! C\'est même notre service le plus apprécié. Chaque vase peut être personnalisé : dimensions, couleur, texture de surface, inscription. Nous proposons aussi un service de création 3D sur mesure à partir de vos inspirations. Contactez-nous via le formulaire ou par email pour discuter de votre projet.' },
-  { q: 'Quelle est votre politique de retour ?', a: 'Nous offrons 14 jours de droit de retour à compter de la réception. Les frais de retour sont à notre charge pour tout article défectueux ou ne correspondant pas à la description. Pour les changements d\'avis, les frais d\'envoi retour sont à la charge du client. Les pièces sur mesure ne sont pas éligibles au retour sauf défaut de fabrication.' },
-  { q: 'Comment entretenir mon vase STRATA ?', a: 'L\'entretien est simple : un chiffon légèrement humide suffit pour la poussière quotidienne. Évitez les produits abrasifs et les nettoyants chimiques agressifs. Nos pièces ne passent pas au lave-vaisselle. La patine peut légèrement évoluer avec le temps — c\'est la vie naturelle de la pièce, qui la rend encore plus unique.' },
-  { q: 'Vos vases sont-ils limités à des séries uniques ?', a: 'Nous produisons deux types de pièces : les modèles de collection (produits en petites séries de 20 à 100 exemplaires numérotés et signés) et les pièces sur mesure (uniques par définition). Aucun de nos modèles n\'est produit industriellement. Même les pièces "de série" présentent de légères variations — c\'est la signature de l\'impression 3D artisanale.' }
+  { q:'Quels matériaux utilisez-vous pour imprimer vos vases ?', a:'Nous utilisons principalement du PLA biosourcé (acide polylactique d\'origine végétale) pour nos pièces mats et texturées, et de la résine photopolymère de haute précision pour nos créations translucides et détaillées. Tous nos matériaux sont non toxiques et respectueux de l\'environnement.' },
+  { q:'Puis-je mettre de l\'eau dans mes vases STRATA ?', a:'La grande majorité de nos vases en résine sont imperméables et peuvent contenir de l\'eau directement. Nos vases en PLA nécessitent un vase intérieur en verre ou plastique. Chaque fiche produit précise cette information.' },
+  { q:'Combien de temps dure l\'impression d\'un vase ?', a:'Selon la complexité et la taille, l\'impression prend entre 6 et 18 heures. À cela s\'ajoutent les étapes de finition : ponçage, patine, contrôle qualité et emballage. Comptez 2 à 3 jours ouvrés de fabrication.' },
+  { q:'Quels sont vos délais et options de livraison ?', a:'Nous expédions sous 2-3 jours ouvrés. La livraison standard en France métropolitaine prend 1 à 2 jours supplémentaires (Colissimo suivi). Livraison offerte dès 89€ d\'achat. Nous livrons dans 32 pays.' },
+  { q:'Proposez-vous des créations sur mesure ?', a:'Absolument ! Chaque vase peut être personnalisé : dimensions, couleur, texture, inscription. Nous proposons aussi un service de création 3D sur mesure à partir de vos inspirations.' },
+  { q:'Quelle est votre politique de retour ?', a:'Nous offrons 14 jours de droit de retour à compter de la réception. Les frais de retour sont à notre charge pour tout article défectueux. Les pièces sur mesure ne sont pas éligibles au retour sauf défaut de fabrication.' },
+  { q:'Comment entretenir mon vase STRATA ?', a:'Un chiffon légèrement humide suffit pour la poussière quotidienne. Évitez les produits abrasifs et les nettoyants chimiques. Nos pièces ne passent pas au lave-vaisselle.' },
+  { q:'Vos vases sont-ils des séries uniques ?', a:'Nous produisons des modèles de collection (20 à 100 exemplaires numérotés) et des pièces sur mesure (uniques). Même les pièces "de série" présentent de légères variations — c\'est la signature de l\'impression 3D artisanale.' }
 ];
 
-const faqList = document.getElementById('faq-list');
-faqList.innerHTML = faqs.map((f, i) => `
+document.getElementById('faq-list').innerHTML = faqs.map(f => `
   <div class="faq-item reveal" onclick="toggleFaq(this)">
     <button class="faq-question">
       <span>${f.q}</span>
-      <span class="faq-icon">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </span>
+      <span class="faq-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
     </button>
-    <div class="faq-answer">
-      <div class="faq-answer-inner">${f.a}</div>
-    </div>
+    <div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div>
   </div>`).join('');
 
 function toggleFaq(item) {
   const isOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(i => {
-    i.classList.remove('open');
-    i.querySelector('.faq-answer').style.maxHeight = '0';
-  });
-  if (!isOpen) {
-    item.classList.add('open');
-    item.querySelector('.faq-answer').style.maxHeight = item.querySelector('.faq-answer-inner').scrollHeight + 'px';
-  }
+  document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-answer').style.maxHeight = '0'; });
+  if (!isOpen) { item.classList.add('open'); item.querySelector('.faq-answer').style.maxHeight = item.querySelector('.faq-answer-inner').scrollHeight + 'px'; }
 }
 
-// ===== WINDOW RESIZE =====
+// ===== RESIZE =====
 window.addEventListener('resize', () => {
-  introCanvas.width = window.innerWidth;
-  introCanvas.height = window.innerHeight;
+  resizeIntro();
   const hc = document.getElementById('hero-canvas');
   if (hc) { hc.width = window.innerWidth; hc.height = window.innerHeight; }
 });
 </script>
 </body>
 </html>
+HTMLEOF
+echo "Done"
