@@ -1,4 +1,3 @@
-cat > /mnt/user-data/outputs/strata-vases.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1873,7 +1872,7 @@ function animateCounter(el) {
 // ===== PRODUCTS DATA =====
 // Pour ajouter une image : remplacez "" par votre URL dans le champ "img"
 const products = [
-  { id:1, name:'Nébuleuse', badge:'new', desc:'PLA biosourcé mat, surface texturée évoquant la vapeur cosmique. H 28cm, Ø 12cm.', price:79, category:'pla', img:'' },
+  { id:1, name:'Nébuleuse', badge:'new', desc:'PLA biosourcé mat, surface texturée évoquant la vapeur cosmique. H 28cm, Ø 12cm.', price:79, category:'pla', img:'https://cdn.phototourl.com/member/2026-05-12-72b95db1-a596-4ff0-b5c6-f1fc52cff07b.jpg'},
   { id:2, name:'Éclipse', badge:'best', desc:'Résine translucide dorée, double paroi avec reflets intérieurs. H 32cm, Ø 10cm.', price:129, category:'resine', img:'' },
   { id:3, name:'Solstice', badge:'limited', desc:'PLA blanc nacré, formes géométriques hélicoïdales. H 22cm, Ø 14cm.', price:89, category:'edition', img:'' },
   { id:4, name:'Zénith Doré', badge:'limited', desc:'Résine premium finition or brossé, cannelures verticales. H 35cm. Édition 50 ex.', price:149, category:'edition', img:'' },
@@ -2093,5 +2092,4 @@ window.addEventListener('resize', () => {
 </script>
 </body>
 </html>
-HTMLEOF
-echo "Done"
+
